@@ -518,4 +518,619 @@ function Hero() {
               <a href={LINKS.resume} target="_blank" rel="noreferrer" style={{
                 background: "transparent",
                 border: `1px solid rgba(163,230,53,0.3)`,
-                color: C.lime, padding: "14px 
+                color: C.lime, padding: "14px ,0.06)
+              `,
+            }}>
+              <div style={{
+                width: "100%", height: "100%",
+                borderRadius: "18px",
+                overflow: "hidden",
+                background: C.bgElevated,
+                position: "relative",
+              }}>
+                <img
+                  src={CONFIG.profilePhoto}
+                  alt="Ramkrishna Parmar — Professional Portrait"
+                  style={{
+                    width: "100%", height: "100%",
+                    objectFit: "cover",
+                    objectPosition: "center top",
+                    display: "block",
+                  }}
+                  onError={e => {
+                    e.target.style.display = "none";
+                    e.target.nextSibling.style.display = "flex";
+                  }}
+                />
+                {/* Placeholder shown if image missing */}
+                <div style={{
+                  display: "none",
+                  position: "absolute", inset: 0,
+                  flexDirection: "column",
+                  alignItems: "center", justifyContent: "center",
+                  gap: "10px",
+                }}>
+                  <div style={{
+                    width: "60px", height: "60px", borderRadius: "50%",
+                    background: C.indigoDim, border: `2px solid ${C.border}`,
+                    display: "flex", alignItems: "center", justifyContent: "center",
+                    fontSize: "22px", fontFamily: "'Syne', sans-serif",
+                    fontWeight: "800", color: C.indigoLight,
+                  }}>
+                    {CONFIG.shortName}
+                  </div>
+                  <span style={{
+                    fontFamily: "'DM Mono', monospace", fontSize: "10px",
+                    color: C.muted, letterSpacing: "0.08em", textAlign: "center",
+                    padding: "0 12px",
+                  }}>
+                    // profile photo
+                  </span>
+                </div>
+              </div>
+
+              <div style={{
+                position: "absolute", bottom: "-12px", right: "-12px",
+                width: "40px", height: "40px",
+                background: `radial-gradient(circle, ${C.lime}44, transparent)`,
+                borderRadius: "50%", pointerEvents: "none",
+              }} />
+              <div style={{
+                position: "absolute", top: "-8px", left: "-8px",
+                width: "24px", height: "24px",
+                background: `radial-gradient(circle, ${C.indigo}66, transparent)`,
+                borderRadius: "50%", pointerEvents: "none",
+              }} />
+            </div>
+
+            <div style={{
+              marginTop: "14px", textAlign: "center",
+              display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
+            }}>
+              <div style={{ width: "6px", height: "6px", borderRadius: "50%", background: C.lime, boxShadow: `0 0 6px ${C.lime}` }} />
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "10px", color: C.muted, letterSpacing: "0.1em" }}>
+                AVAILABLE
+              </span>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 2 }}
+          style={{
+            marginTop: "80px",
+            display: "flex", alignItems: "center", gap: "12px",
+          }}
+        >
+          <div style={{
+            width: "1px", height: "48px",
+            background: `linear-gradient(to bottom, ${C.indigo}, transparent)`,
+          }} />
+          <span style={{ color: C.muted, fontSize: "11px", fontFamily: "'DM Mono', monospace", letterSpacing: "0.1em", writingMode: "vertical-lr" }}>
+            SCROLL
+          </span>
+        </motion.div>
+      </div>
+
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;600&display=swap');
+        @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body { background: ${C.bg}; color: ${C.white}; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: ${C.bg}; }
+        ::-webkit-scrollbar-thumb { background: ${C.indigo}; border-radius: 2px; }
+        @media (max-width: 768px) {
+          .nav-links { display: none !important; }
+          .hero-grid { grid-template-columns: 1fr !important; }
+          .hero-portrait { display: none !important; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+// ============================================================
+// STORY  —  elevated panel background
+// ============================================================
+function Story() {
+  const [ref, inView] = useReveal();
+
+  const nodes = [
+    { icon: <Smartphone size={16} />, label: "Android + Termux", text: "No laptop. No shortcuts. Built first workflows entirely on Android using Termux — nano editor, local servers, GitHub clones. This constraint became an unfair advantage." },
+    { icon: <Terminal size={16} />, label: "Deep Debugging", text: "When your environment breaks on mobile, you learn how systems actually work. Every error message became a lesson. Every fix became architecture thinking." },
+    { icon: <BookOpen size={16} />, label: "JEE + Code Balance", text: "Class 12 PCM with PW online preparation — while simultaneously building a coding profile. Physics problems trained systematic thinking. JEE prep built pressure tolerance." },
+    { icon: <Brain size={16} />, label: "Product Thinking", text: "Moved from 'does it work' to 'how does it build trust'. Started studying how polished interfaces create credibility — and why users feel confident in some products, not others." },
+  ];
+
+  return (
+    <section id="story" style={{
+      padding: "140px 32px",
+      position: "relative",
+      background: C.bgElevated,
+    }} ref={ref}>
+      {/* Subtle dot-pattern texture */}
+      <div style={{
+        position: "absolute", inset: 0, zIndex: 0, pointerEvents: "none",
+        backgroundImage: `radial-gradient(${C.border} 1px, transparent 1px)`,
+        backgroundSize: "32px 32px",
+        opacity: 0.4,
+      }} />
+
+      <div style={{ maxWidth: "1100px", margin: "0 auto", position: "relative", zIndex: 1 }}>
+
+        <motion.div variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} custom={0}>
+          <ChapterHeading
+            number="01" label="ORIGIN"
+            subtitle="Most developers start with a MacBook and a bootcamp. I started with a phone, Termux, and a Wi-Fi connection. What others call a limitation, I call my origin story."
+          >
+            The Story Behind<br />
+            <span style={{ color: C.indigoLight }}>the Engineer</span>
+          </ChapterHeading>
+        </motion.div>
+
+        <div style={{
+          display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+          gap: "20px",
+        }}>
+          {nodes.map((n, i) => (
+            <motion.div
+              key={i}
+              variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} custom={i + 1}
+              style={{
+                background: C.bgCard, border: `1px solid ${C.border}`,
+                borderRadius: "16px", padding: "28px",
+                transition: "all 0.3s ease",
+                cursor: "default",
+              }}
+              whileHover={{ y: -4, borderColor: C.indigo, boxShadow: `0 12px 40px rgba(99,102,241,0.12)` }}
+            >
+              <div style={{
+                width: "36px", height: "36px", borderRadius: "10px",
+                background: C.indigoDim, border: `1px solid ${C.border}`,
+                display: "flex", alignItems: "center", justifyContent: "center",
+                color: C.indigoLight, marginBottom: "16px",
+              }}>
+                {n.icon}
+              </div>
+              <h3 style={{ fontFamily: "'Syne', sans-serif", fontWeight: "700", fontSize: "15px", color: C.white, marginBottom: "10px" }}>
+                {n.label}
+              </h3>
+              <p style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: C.muted, lineHeight: "1.7" }}>
+                {n.text}
+              </p>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Editorial quote block */}
+        <motion.div
+          variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} custom={5}
+          style={{
+            marginTop: "48px", padding: "36px 44px",
+            borderLeft: `4px solid ${C.indigo}`,
+            background: `linear-gradient(135deg, ${C.indigoDim}, rgba(8,8,16,0.4))`,
+            borderRadius: "0 16px 16px 0",
+            boxShadow: `inset 0 0 40px rgba(99,102,241,0.04)`,
+          }}
+        >
+          <p style={{
+            fontFamily: "'Syne', sans-serif", fontSize: "clamp(16px, 2.5vw, 20px)",
+            color: C.white, fontWeight: "600", lineHeight: "1.6", fontStyle: "italic",
+          }}>
+            "I don't just want systems to work. I want to understand why they work — and then make them look like they were built to last."
+          </p>
+          <p style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: C.muted, marginTop: "14px", letterSpacing: "0.06em" }}>
+            — Ramkrishna Parmar, Class 12
+          </p>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ============================================================
+// SKILLS / TECHNICAL PROOF CONSOLE  —  clean bg
+// ============================================================
+function Skills() {
+  const [ref, inView] = useReveal();
+  const [activeTab, setActiveTab] = useState("frontend");
+
+  const tabs = {
+    frontend: {
+      label: "Frontend",
+      color: C.indigoLight,
+      items: [
+        { name: "HTML & CSS", level: 90, note: "Semantic, accessible, responsive" },
+        { name: "JavaScript", level: 75, note: "DOM, async, ES6+" },
+        { name: "React", level: 70, note: "Components, hooks, state" },
+        { name: "Tailwind CSS", level: 72, note: "Utility-first design systems" },
+        { name: "Responsive UI", level: 80, note: "Mobile-first approach" },
+      ]
+    },
+    tools: {
+      label: "Tools",
+      color: C.lime,
+      items: [
+        { name: "Git & GitHub", level: 75, note: "Repo management, cloning, commits" },
+        { name: "Termux / Android", level: 85, note: "Full workflow on mobile" },
+        { name: "Nano Editor", level: 80, note: "Terminal editing comfort" },
+        { name: "Local Dev Servers", level: 70, note: "Testing & debugging" },
+        { name: "API Basics", level: 55, note: "REST concepts, fetch" },
+      ]
+    },
+    data: {
+      label: "Data & AI",
+      color: "#f472b6",
+      items: [
+        { name: "PowerBI", level: 72, note: "Dashboards, AI visuals, insights" },
+        { name: "Data Visualization", level: 65, note: "Charts, metrics, storytelling" },
+        { name: "Python Basics", level: 45, note: "Scripting fundamentals" },
+        { name: "AI Integrations", level: 40, note: "Learning — APIs, prompting" },
+        { name: "IIT Madras DS/AI", level: 70, note: "Certified 8-week course" },
+      ]
+    },
+    learning: {
+      label: "Learning",
+      color: "#fb923c",
+      items: [
+        { name: "Next.js", level: 25, note: "SSR, routing — in progress" },
+        { name: "Node.js", level: 20, note: "Backend basics — starting" },
+        { name: "Product Architecture", level: 35, note: "System design thinking" },
+        { name: "AI Integration", level: 40, note: "Building with AI APIs" },
+      ]
+    },
+  };
+
+  const active = tabs[activeTab];
+
+  const proofLines = [
+    { prefix: "focus", text: "Next.js + Node.js — full-stack in progress", color: "#fb923c" },
+    { prefix: "workflow", text: "Android → Termux → GitHub → Vercel/Pages", color: C.indigoLight },
+    { prefix: "mindset", text: "constraint-first debugging builds real intuition", color: C.white },
+    { prefix: "tool", text: "PowerBI AI Dashboards — production-grade visuals", color: "#f472b6" },
+    { prefix: "approach", text: "read the error, trace the call stack, fix the root", color: C.muted },
+    { prefix: "system", text: "performance-first: load fast, render clean, no waste", color: C.indigoLight },
+    { prefix: "ai", text: "exploring: Claude API + React = intelligent UIs", color: "#818cf8" },
+    { prefix: "cert", text: "IIT Madras DS/AI — 8 weeks, completed Aug 2025", color: C.lime },
+    { prefix: "jee", text: "PCM + Physics logic → systems thinking overlap", color: C.muted },
+    { prefix: "target", text: "Q2 2026: first AI-integrated full-stack product", color: C.lime },
+    { prefix: "build", text: "no shortcuts. shipped from a phone. still shipping.", color: C.white },
+    { prefix: "~$", text: "_", color: C.lime },
+  ];
+
+  return (
+    <section id="skills" style={{ padding: "140px 32px", background: C.bg }} ref={ref}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+
+        <motion.div variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"}>
+          <ChapterHeading number="02" label="TECHNICAL PROOF">
+            Skills &<br /><span style={{ color: C.indigoLight }}>Stack</span>
+          </ChapterHeading>
+        </motion.div>
+
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "32px" }} className="skills-grid">
+
+          {/* Skill bars panel */}
+          <motion.div
+            variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} custom={1}
+            style={{
+              background: C.bgCard, border: `1px solid ${C.border}`,
+              borderRadius: "16px", padding: "32px", overflow: "hidden",
+            }}
+          >
+            <div style={{ display: "flex", gap: "8px", marginBottom: "28px", flexWrap: "wrap" }}>
+              {Object.entries(tabs).map(([key, val]) => (
+                <button key={key} onClick={() => setActiveTab(key)} style={{
+                  padding: "6px 14px", borderRadius: "8px", border: "1px solid",
+                  borderColor: activeTab === key ? val.color : C.border,
+                  background: activeTab === key ? `${val.color}18` : "transparent",
+                  color: activeTab === key ? val.color : C.muted,
+                  fontFamily: "'DM Mono', monospace", fontSize: "12px", cursor: "pointer",
+                  letterSpacing: "0.04em", transition: "all 0.2s",
+                }}>
+                  {val.label}
+                </button>
+              ))}
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div key={activeTab}
+                initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -10 }} transition={{ duration: 0.25 }}
+              >
+                {active.items.map((item, i) => (
+                  <div key={i} style={{ marginBottom: "20px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "6px" }}>
+                      <span style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "14px", color: C.white, fontWeight: "500" }}>
+                        {item.name}
+                      </span>
+                      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: C.muted }}>
+                        {item.level}%
+                      </span>
+                    </div>
+                    <div style={{ height: "4px", background: "rgba(255,255,255,0.06)", borderRadius: "2px", overflow: "hidden" }}>
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={inView ? { width: `${item.level}%` } : { width: 0 }}
+                        transition={{ duration: 0.8, delay: i * 0.1, ease: "easeOut" }}
+                        style={{
+                          height: "100%", borderRadius: "2px",
+                          background: `linear-gradient(90deg, ${active.color}, ${active.color}88)`,
+                          boxShadow: `0 0 8px ${active.color}44`,
+                        }}
+                      />
+                    </div>
+                    <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: C.muted, marginTop: "4px", display: "block" }}>
+                      {item.note}
+                    </span>
+                  </div>
+                ))}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
+
+          {/* Technical Proof Console */}
+          <motion.div
+            variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} custom={2}
+            style={{
+              background: "#050508", border: `1px solid rgba(99,102,241,0.25)`,
+              borderRadius: "16px", overflow: "hidden",
+            }}
+          >
+            <div style={{
+              padding: "12px 16px",
+              background: "#0a0a14",
+              borderBottom: "1px solid rgba(99,102,241,0.15)",
+              display: "flex", alignItems: "center", gap: "8px",
+            }}>
+              <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#ff5f57" }} />
+              <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#febc2e" }} />
+              <div style={{ width: "10px", height: "10px", borderRadius: "50%", background: "#28c840" }} />
+              <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: C.indigo, marginLeft: "8px", letterSpacing: "0.05em" }}>
+                proof.console — engineering context
+              </span>
+            </div>
+
+            <div style={{ padding: "20px", fontFamily: "'DM Mono', monospace", fontSize: "12px", lineHeight: "2.0" }}>
+              {proofLines.map((line, i) => (
+                <motion.div key={i}
+                  variants={fadeIn} initial="hidden" animate={inView ? "visible" : "hidden"} custom={i}
+                  style={{ display: "flex", gap: "10px", alignItems: "baseline" }}
+                >
+                  <span style={{
+                    color: C.indigo, userSelect: "none", flexShrink: 0,
+                    fontSize: "10px", letterSpacing: "0.06em", minWidth: "64px",
+                    opacity: 0.75,
+                  }}>
+                    [{line.prefix}]
+                  </span>
+                  <span style={{ color: line.color, lineHeight: "1.6" }}>{line.text}</span>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .skills-grid { grid-template-columns: 1fr !important; }
+        }
+      `}</style>
+    </section>
+  );
+}
+
+// ============================================================
+// PROJECTS BENTO  —  grid bg variation
+// ============================================================
+function Projects() {
+  const [ref, inView] = useReveal();
+  const projects = CONFIG.projects;
+
+  const statusColors = {
+    completed: C.lime,
+    "in-progress": C.indigoLight,
+    planned: C.muted,
+  };
+
+  return (
+    <section id="projects" style={{
+      padding: "140px 32px",
+      background: C.bgGrid,
+      backgroundImage: `
+        linear-gradient(rgba(99,102,241,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(99,102,241,0.025) 1px, transparent 1px)
+      `,
+      backgroundSize: "40px 40px",
+    }} ref={ref}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+
+        <motion.div variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"}>
+          <ChapterHeading
+            number="03" label="WORK"
+            subtitle="// real builds, real problems, real learning"
+          >
+            Featured<br /><span style={{ color: C.indigoLight }}>Projects</span>
+            // ============================================================
+// CONTACT  —  section 07
+// ============================================================
+function Contact() {
+  const [ref, inView] = useReveal();
+
+  const socials = [
+    { label: "GitHub", icon: <Github size={18} />, href: LINKS.github, color: C.white, note: "Code & repos" },
+    { label: "LinkedIn", icon: <Linkedin size={18} />, href: LINKS.linkedin, color: "#0ea5e9", note: "Professional profile" },
+    { label: "Email", icon: <Mail size={18} />, href: `mailto:${LINKS.email}`, color: C.indigo, note: "Direct contact" },
+  ];
+
+  return (
+    <section id="contact" style={{ padding: "140px 32px 80px", background: C.bg }} ref={ref}>
+      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
+
+        <motion.div variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"}>
+          <SectionLabel number="07" title="CONTACT" />
+        </motion.div>
+
+        <motion.div
+          variants={fadeUp} initial="hidden" animate={inView ? "visible" : "hidden"} custom={1}
+          style={{
+            marginTop: "32px", padding: "64px 48px",
+            background: `linear-gradient(135deg, rgba(99,102,241,0.1) 0%, ${C.bgCard} 50%, rgba(163,230,53,0.05) 100%)`,
+            border: `1px solid ${C.border}`,
+            borderRadius: "24px",
+            position: "relative", overflow: "hidden",
+          }}
+        >
+          <div style={{
+            position: "absolute", top: "-60px", right: "-60px",
+            width: "240px", height: "240px",
+            background: "radial-gradient(circle, rgba(99,102,241,0.12), transparent)",
+            borderRadius: "50%", pointerEvents: "none",
+          }} />
+
+          <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "20px" }}>
+            <div style={{ width: "8px", height: "8px", borderRadius: "50%", background: C.lime, boxShadow: `0 0 8px ${C.lime}` }} />
+            <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: C.lime, letterSpacing: "0.08em" }}>
+              AVAILABLE FOR OPPORTUNITIES
+            </span>
+          </div>
+
+          <h2 style={{
+            fontFamily: "'Syne', sans-serif", fontSize: "clamp(28px, 5vw, 52px)",
+            fontWeight: "800", letterSpacing: "-0.02em", color: C.white,
+            marginBottom: "16px", lineHeight: "1.1",
+          }}>
+            Let's Build<br />
+            <span style={{ color: C.indigoLight }}>Something Real</span>
+          </h2>
+
+          <p style={{
+            fontFamily: "'DM Sans', sans-serif", fontSize: "16px", color: C.muted,
+            maxWidth: "480px", lineHeight: "1.8", marginBottom: "48px",
+          }}>
+            Open for internships, freelance projects, collaborations, and conversations about
+            frontend engineering, AI products, or just good ideas worth building.
+          </p>
+
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", marginBottom: "48px" }}>
+            {socials.map((s, i) => (
+              <motion.a
+                key={i}
+                href={s.href}
+                target={s.label !== "Email" ? "_blank" : undefined}
+                rel="noreferrer"
+                whileHover={{ y: -3, scale: 1.02 }}
+                style={{
+                  background: C.bgCard, border: `1px solid ${C.border}`,
+                  borderRadius: "14px", padding: "20px 24px",
+                  textDecoration: "none", display: "flex", alignItems: "center", gap: "14px",
+                  transition: "border-color 0.2s",
+                }}
+                onMouseEnter={e => e.currentTarget.style.borderColor = s.color}
+                onMouseLeave={e => e.currentTarget.style.borderColor = C.border}
+              >
+                <div style={{
+                  width: "40px", height: "40px", borderRadius: "10px",
+                  background: `${s.color}18`, border: `1px solid ${s.color}30`,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  color: s.color, flexShrink: 0,
+                }}>
+                  {s.icon}
+                </div>
+                <div>
+                  <div style={{ fontFamily: "'Syne', sans-serif", fontWeight: "700", fontSize: "15px", color: C.white }}>
+                    {s.label}
+                  </div>
+                  <div style={{ fontFamily: "'DM Mono', monospace", fontSize: "11px", color: C.muted, marginTop: "2px" }}>
+                    {s.note}
+                  </div>
+                </div>
+                <ArrowUpRight size={14} style={{ color: C.muted, marginLeft: "auto" }} />
+              </motion.a>
+            ))}
+          </div>
+
+          <div style={{
+            padding: "16px 20px",
+            background: "#050508",
+            border: "1px solid rgba(163,230,53,0.15)",
+            borderRadius: "10px", display: "inline-flex", alignItems: "center", gap: "12px",
+          }}>
+            <span style={{ color: C.lime, fontFamily: "'DM Mono', monospace", fontSize: "12px" }}>~$</span>
+            <span style={{ color: C.muted, fontFamily: "'DM Mono', monospace", fontSize: "12px" }}>
+              response_time --average
+            </span>
+            <span style={{ color: C.white, fontFamily: "'DM Mono', monospace", fontSize: "12px" }}>
+              &lt; 24 hours
+            </span>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+// ============================================================
+// FOOTER
+// ============================================================
+function Footer() {
+  return (
+    <footer style={{
+      borderTop: `1px solid ${C.border}`,
+      padding: "32px",
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      flexWrap: "wrap", gap: "16px",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+        <div style={{
+          width: "24px", height: "24px", borderRadius: "6px",
+          background: `linear-gradient(135deg, ${C.indigo}, ${C.indigoLight})`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          fontSize: "10px", fontWeight: "800", color: "#fff", fontFamily: "'Syne', sans-serif",
+        }}>{CONFIG.shortName}</div>
+        <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: C.muted }}>
+          Ramkrishna Parmar · 2026
+        </span>
+      </div>
+      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: C.muted }}>
+        // built with discipline
+      </span>
+      <span style={{ fontFamily: "'DM Mono', monospace", fontSize: "12px", color: C.muted }}>
+        {CONFIG.tagline}
+      </span>
+    </footer>
+  );
+}
+
+// ============================================================
+// ROOT APP
+// ============================================================
+export default function App() {
+  return (
+    <div style={{ background: C.bg, minHeight: "100vh" }}>
+      <NoiseOverlay />
+      <Nav />
+      <Hero />
+      {/* Section rhythm: elevated → clean → grid → elevated → clean → elevated → clean */}
+      <Story />
+      <PremiumDivider />
+      <Skills />
+      <PremiumDivider variant="fade" />
+      <Projects />
+      <PremiumDivider />
+      <Achievements />
+      <PremiumDivider variant="fade" />
+      <Timeline />
+      <PremiumDivider />
+      <CurrentFocus />
+      <PremiumDivider variant="fade" />
+      <Contact />
+      <Footer />
+    </div>
+  );
+          }
+     
