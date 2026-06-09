@@ -1,0 +1,1673 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Ramkrishna Parmar — Tech Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════
+   THEME VARIABLES
+═══════════════════════════════════════ */
+:root{ --cyan:#00f5ff; --magenta:#ff00cc; --gold:#ffd700; --green:#00ff88; --red:#ff4466; }
+[data-theme="dark"]{
+  --bg:#050510; --bg2:#0a0a1a; --bg3:#0d0d22;
+  --card-bg:rgba(0,245,255,0.04); --card-hover:rgba(0,245,255,0.07);
+  --border:rgba(0,245,255,0.22); --border2:rgba(0,245,255,0.1);
+  --text:#e0f7fa; --text2:rgba(224,247,250,0.65); --text3:rgba(224,247,250,0.38);
+  --nav-bg:rgba(5,5,16,0.88); --nav-scrolled:rgba(5,5,16,0.98);
+  --input-bg:rgba(0,0,0,0.45); --result-bg:rgba(0,0,0,0.35);
+  --footer-bg:rgba(0,0,0,0.6); --shadow:rgba(0,0,0,0.7);
+  --chart-bg:rgba(0,0,0,0.25);
+}
+[data-theme="light"]{
+  --bg:#edf2ff; --bg2:#dde6fa; --bg3:#cdd8f5;
+  --card-bg:rgba(255,255,255,0.88); --card-hover:rgba(255,255,255,0.97);
+  --border:rgba(0,130,200,0.28); --border2:rgba(0,130,200,0.14);
+  --text:#0d1f3c; --text2:rgba(13,31,60,0.68); --text3:rgba(13,31,60,0.42);
+  --nav-bg:rgba(237,242,255,0.92); --nav-scrolled:rgba(237,242,255,0.99);
+  --input-bg:rgba(255,255,255,0.92); --result-bg:rgba(240,246,255,0.85);
+  --footer-bg:rgba(215,228,255,0.9); --shadow:rgba(0,80,180,0.1);
+  --chart-bg:rgba(240,246,255,0.6);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg2);}
+::-webkit-scrollbar-thumb{background:var(--cyan);border-radius:3px;}
+body{
+  font-family:'Rajdhani',sans-serif;background:var(--bg);color:var(--text);
+  overflow-x:hidden;transition:background .4s,color .4s;
+}
+
+/* ═══════════════════════════════════════
+   LOADING SCREEN
+═══════════════════════════════════════ */
+#loadScreen{
+  position:fixed;inset:0;background:#020208;z-index:99999;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .9s ease,visibility .9s ease;
+}
+#loadScreen.out{opacity:0;visibility:hidden;pointer-events:none;}
+.ls-stars{position:absolute;inset:0;pointer-events:none;}
+.ls-star{
+  position:absolute;border-radius:50%;background:#fff;
+  animation:lsStar 2s ease-in-out infinite;
+}
+@keyframes lsStar{0%,100%{opacity:.07;transform:scale(.7);}50%{opacity:.9;transform:scale(1.3);}}
+.ls-nebula{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 30% 40%,rgba(0,245,255,.09) 0%,transparent 65%),
+    radial-gradient(ellipse 50% 60% at 75% 70%,rgba(255,0,204,.07) 0%,transparent 65%),
+    radial-gradient(ellipse 40% 35% at 60% 20%,rgba(255,215,0,.05) 0%,transparent 60%);
+  animation:lsNeb 8s ease-in-out infinite alternate;
+}
+@keyframes lsNeb{0%{opacity:.6}100%{opacity:1}}
+.ls-body{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:18px;}
+.ls-rings{position:relative;width:150px;height:150px;}
+.ls-ring{position:absolute;inset:0;border-radius:50%;border:2px solid transparent;}
+.ls-ring.r1{
+  background:linear-gradient(#020208,#020208) padding-box,
+             conic-gradient(var(--cyan),transparent 60%,var(--cyan)) border-box;
+  animation:lsSpin 2.2s linear infinite;
+}
+.ls-ring.r2{
+  inset:15px;
+  background:linear-gradient(#020208,#020208) padding-box,
+             conic-gradient(var(--magenta),transparent 70%,var(--magenta)) border-box;
+  animation:lsSpin 3.1s linear infinite reverse;
+}
+.ls-ring.r3{
+  inset:30px;
+  background:linear-gradient(#020208,#020208) padding-box,
+             conic-gradient(var(--gold),transparent 50%,var(--gold)) border-box;
+  animation:lsSpin 1.7s linear infinite;
+}
+@keyframes lsSpin{to{transform:rotate(360deg);}}
+.ls-core{
+  position:absolute;inset:45px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,245,255,.55) 0%,rgba(0,245,255,.12) 55%,transparent 80%);
+  display:flex;align-items:center;justify-content:center;font-size:26px;
+  animation:lsCore 1.8s ease-in-out infinite;
+  box-shadow:0 0 40px rgba(0,245,255,.45),0 0 80px rgba(0,245,255,.15);
+}
+@keyframes lsCore{0%,100%{transform:scale(1)}50%{transform:scale(1.12);box-shadow:0 0 60px rgba(0,245,255,.7),0 0 120px rgba(0,245,255,.25);}}
+.ls-title{
+  font-family:'Orbitron',monospace;font-size:clamp(20px,5vw,30px);font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),var(--magenta) 50%,var(--gold));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:4px;animation:lsTitle 2.5s ease-in-out infinite;
+}
+@keyframes lsTitle{0%,100%{filter:brightness(1)}50%{filter:brightness(1.4) drop-shadow(0 0 12px rgba(0,245,255,.6));}}
+.ls-sub{font-family:'JetBrains Mono',monospace;font-size:11px;color:rgba(0,245,255,.55);letter-spacing:5px;}
+.ls-bar-wrap{width:220px;height:4px;background:rgba(0,245,255,.1);border-radius:4px;overflow:hidden;margin-top:4px;}
+.ls-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--cyan),var(--magenta));border-radius:4px;box-shadow:0 0 12px var(--cyan);transition:width .08s linear;}
+.ls-pct{font-family:'JetBrains Mono',monospace;font-size:14px;color:var(--cyan);letter-spacing:2px;font-weight:700;}
+.ls-status{font-size:10px;color:rgba(255,255,255,.35);letter-spacing:2.5px;font-family:'JetBrains Mono',monospace;min-height:16px;}
+
+/* ═══════════════════════════════════════
+   BACKGROUNDS
+═══════════════════════════════════════ */
+.bg-mesh{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%,rgba(0,245,255,.055) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 80%,rgba(255,0,204,.045) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 40% at 50% 50%,rgba(255,215,0,.018) 0%,transparent 70%),
+    var(--bg);
+  animation:meshDrift 30s ease-in-out infinite alternate;
+  transition:background .5s;
+}
+[data-theme="light"] .bg-mesh{
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 20%,rgba(0,150,255,.06) 0%,transparent 60%),
+    radial-gradient(ellipse 60% 60% at 80% 80%,rgba(100,0,200,.04) 0%,transparent 60%),
+    var(--bg);
+}
+@keyframes meshDrift{
+  0%{background-position:0 0,100% 100%,50% 50%;}
+  100%{background-position:12% 6%,88% 94%,52% 48%;}
+}
+.bg-grid{
+  position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:linear-gradient(rgba(0,245,255,.022) 1px,transparent 1px),linear-gradient(90deg,rgba(0,245,255,.022) 1px,transparent 1px);
+  background-size:60px 60px;
+  mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black 40%,transparent 100%);
+  transition:opacity .4s;
+}
+[data-theme="light"] .bg-grid{opacity:.35;background-image:linear-gradient(rgba(0,100,200,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,100,200,.05) 1px,transparent 1px);}
+#pCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;transition:opacity .4s;}
+[data-theme="light"] #pCanvas{opacity:.15;}
+.bg-orbs{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+.orb{position:absolute;border-radius:50%;filter:blur(100px);opacity:.08;animation:orbF 26s infinite ease-in-out;}
+[data-theme="light"] .orb{opacity:.03;}
+.orb1{width:560px;height:560px;background:var(--cyan);top:-120px;left:-120px;}
+.orb2{width:440px;height:440px;background:var(--magenta);bottom:-120px;right:-120px;animation-delay:-9s;}
+.orb3{width:320px;height:320px;background:var(--gold);top:50%;left:50%;margin:-160px 0 0 -160px;animation-delay:-18s;}
+@keyframes orbF{0%,100%{transform:translate(0,0)}33%{transform:translate(35px,-25px)}66%{transform:translate(-22px,32px)}}
+
+/* ═══════════════════════════════════════
+   NAV — CLOCK OVERLAY FIX
+═══════════════════════════════════════ */
+nav.topnav{
+  position:sticky;top:0;z-index:1000;
+  background:var(--nav-bg);
+  backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);
+  border-bottom:1px solid var(--border);
+  padding:0 4%;
+  display:flex;justify-content:space-between;align-items:center;
+  height:64px;gap:8px;
+  overflow:hidden;        /* ← FIX: clock cannot bleed over hero */
+  transition:height .4s cubic-bezier(.4,0,.2,1),background .4s,border-color .4s,box-shadow .4s;
+}
+nav.topnav.scrolled{
+  height:52px;
+  background:var(--nav-scrolled);   /* ← FIX: fully opaque when scrolled */
+  border-color:rgba(0,245,255,.12);
+  box-shadow:0 4px 32px rgba(0,0,0,.6),0 1px 0 rgba(0,245,255,.06);
+}
+.nav-logo{
+  font-family:'Orbitron',monospace;font-size:13px;font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),var(--magenta));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  letter-spacing:2px;white-space:nowrap;flex-shrink:0;
+  transition:font-size .4s;
+}
+nav.topnav.scrolled .nav-logo{font-size:11px;}
+.nav-links{display:flex;gap:3px;align-items:center;flex-wrap:nowrap;overflow:hidden;}
+.nav-links a{
+  color:var(--text2);text-decoration:none;font-size:12px;font-weight:600;
+  padding:5px 10px;border-radius:20px;border:1px solid transparent;
+  transition:all .3s;letter-spacing:.8px;white-space:nowrap;
+}
+.nav-links a:hover{color:var(--cyan);border-color:rgba(0,245,255,.2);background:rgba(0,245,255,.06);}
+nav.topnav.scrolled .nav-links a{font-size:11px;padding:4px 8px;}
+.nav-right{display:flex;align-items:center;gap:7px;flex-shrink:0;}
+/* Theme Toggle */
+.theme-btn{
+  display:flex;align-items:center;gap:5px;
+  background:rgba(0,245,255,.06);border:1px solid var(--border);
+  border-radius:20px;padding:5px 11px;cursor:pointer;
+  font-size:12px;font-weight:700;font-family:'Rajdhani',sans-serif;
+  color:var(--cyan);letter-spacing:.8px;white-space:nowrap;
+  transition:all .3s;
+}
+.theme-btn:hover{background:rgba(0,245,255,.14);box-shadow:0 0 16px rgba(0,245,255,.2);}
+[data-theme="light"] .theme-btn{color:#0060bb;border-color:rgba(0,100,200,.3);background:rgba(0,100,200,.07);}
+/* Clock */
+.clock-w{
+  display:flex;flex-direction:column;align-items:flex-end;
+  background:rgba(0,245,255,.05);border:1px solid rgba(0,245,255,.18);
+  border-radius:10px;padding:5px 11px;flex-shrink:0;overflow:hidden;
+  animation:clkBr 4s ease-in-out infinite;
+  transition:padding .4s;
+}
+[data-theme="light"] .clock-w{background:rgba(0,100,200,.07);border-color:rgba(0,100,200,.25);}
+@keyframes clkBr{0%,100%{box-shadow:none}50%{box-shadow:0 0 18px rgba(0,245,255,.16);}}
+nav.topnav.scrolled .clock-w{padding:3px 9px;}
+.clk-time{
+  font-family:'JetBrains Mono',monospace;font-size:16px;font-weight:700;
+  color:var(--cyan);letter-spacing:3px;line-height:1.2;white-space:nowrap;
+  transition:font-size .4s;
+}
+[data-theme="light"] .clk-time{color:#0060bb;}
+nav.topnav.scrolled .clk-time{font-size:13px;}
+.clk-ampm{font-size:9px;color:var(--gold);font-family:'JetBrains Mono',monospace;letter-spacing:2px;}
+.clk-date-row{
+  display:flex;gap:8px;width:100%;overflow:hidden;
+  max-height:20px;opacity:1;
+  transition:max-height .4s cubic-bezier(.4,0,.2,1),opacity .3s;
+}
+nav.topnav.scrolled .clk-date-row{max-height:0;opacity:0;}
+.clk-date{font-size:9px;color:var(--text3);letter-spacing:.8px;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+
+/* ═══════════════════════════════════════
+   HERO + PHOTO FRAME
+═══════════════════════════════════════ */
+.hero{
+  position:relative;z-index:1;
+  display:flex;align-items:center;gap:48px;flex-wrap:wrap;
+  padding:72px 5% 52px;max-width:1100px;margin:auto;
+}
+.hero-av-wrap{position:relative;flex-shrink:0;}
+.hero-av-ring{
+  position:absolute;top:-12px;left:-12px;right:-12px;bottom:-12px;
+  border-radius:50%;border:2px solid transparent;
+  background:linear-gradient(var(--bg),var(--bg)) padding-box,
+             linear-gradient(135deg,var(--cyan),var(--magenta),var(--gold)) border-box;
+  animation:avSpin 8s linear infinite;
+}
+[data-theme="light"] .hero-av-ring{background:linear-gradient(var(--bg),var(--bg)) padding-box,linear-gradient(135deg,var(--cyan),var(--magenta),var(--gold)) border-box;}
+@keyframes avSpin{to{transform:rotate(360deg);}}
+
+/*
+  ╔══════════════════════════════════════════╗
+  ║  PHOTO FRAME — HOW TO ADD YOUR PHOTO     ║
+  ║  1. Put your image file next to this     ║
+  ║     HTML file (e.g., ramkrishna.jpg)     ║
+  ║  2. In the <img> below, change:          ║
+  ║     src="YOUR_PHOTO.jpg"                 ║
+  ║     to your actual filename              ║
+  ╚══════════════════════════════════════════╝
+*/
+.hero-photo-frame{
+  width:160px;height:160px;border-radius:50%;
+  background:linear-gradient(135deg,rgba(0,245,255,.15),rgba(255,0,204,.15));
+  border:2px solid var(--border);
+  position:relative;z-index:1;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 32px rgba(0,245,255,.22),inset 0 0 24px rgba(0,245,255,.06);
+}
+.hero-photo-frame img{
+  width:100%;height:100%;object-fit:cover;object-position:center;
+  border-radius:50%;position:absolute;inset:0;display:block;
+}
+.hero-photo-fb{
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  width:100%;height:100%;position:relative;z-index:1;
+}
+.photo-initials{
+  font-family:'Orbitron',monospace;font-size:40px;font-weight:900;
+  background:linear-gradient(135deg,var(--cyan),var(--magenta));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;line-height:1;
+}
+.photo-lbl{font-size:10px;color:var(--cyan);font-family:'JetBrains Mono',monospace;letter-spacing:2px;margin-top:5px;}
+
+.hero-greeting{font-size:13px;color:var(--cyan);letter-spacing:4px;text-transform:uppercase;font-family:'JetBrains Mono',monospace;opacity:.8;}
+.hero-name{
+  font-family:'Orbitron',monospace;font-size:clamp(26px,4vw,46px);font-weight:900;
+  background:linear-gradient(135deg,#fff 30%,var(--cyan) 65%,var(--magenta));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  line-height:1.1;margin:8px 0;
+}
+[data-theme="light"] .hero-name{background:linear-gradient(135deg,#0d1f3c 30%,#005fc4 65%,#aa00cc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+.hero-title{font-size:15px;color:var(--gold);letter-spacing:3px;font-weight:600;text-transform:uppercase;margin-bottom:18px;text-shadow:0 0 16px rgba(255,215,0,.4);}
+[data-theme="light"] .hero-title{text-shadow:none;}
+.hero-bio{font-size:15px;color:var(--text2);max-width:500px;line-height:1.75;border-left:2px solid var(--cyan);padding-left:16px;}
+.hero-tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px;}
+.tag{padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid var(--border);color:var(--cyan);background:rgba(0,245,255,.06);letter-spacing:1px;font-family:'JetBrains Mono',monospace;}
+[data-theme="light"] .tag{color:#005fc4;background:rgba(0,100,200,.08);border-color:rgba(0,100,200,.25);}
+
+/* ═══════════════════════════════════════
+   SECTIONS
+═══════════════════════════════════════ */
+.sec-wrap{position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 5% 60px;}
+.sec-hdr{display:flex;align-items:center;gap:18px;margin-bottom:32px;padding-bottom:16px;border-bottom:1px solid var(--border);}
+.sec-ico{font-size:26px;}
+.sec-ttl{font-family:'Orbitron',monospace;font-size:17px;font-weight:700;color:var(--text);letter-spacing:2px;}
+.sec-ttl span{color:var(--cyan);}
+.sec-line{flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent);}
+.divider{height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:0 5% 60px;}
+
+/* ═══════════════════════════════════════
+   CARDS
+═══════════════════════════════════════ */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px;}
+.card{
+  background:var(--card-bg);border:1px solid var(--border);border-radius:16px;
+  padding:22px;position:relative;overflow:hidden;
+  transition:transform .4s cubic-bezier(.23,1,.32,1),border-color .4s,background .4s,box-shadow .4s;
+}
+.card::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:2px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);transition:left .55s cubic-bezier(.4,0,.2,1);}
+.card:hover::before{left:100%;}
+.card:hover{transform:translateY(-7px) scale(1.006);border-color:rgba(0,245,255,.4);background:var(--card-hover);box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 40px rgba(0,245,255,.07);}
+[data-theme="light"] .card:hover{box-shadow:0 12px 40px rgba(0,80,200,.14),0 0 20px rgba(0,150,255,.07);}
+.c-hdr{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.c-ico{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:rgba(0,245,255,.1);border:1px solid var(--border);}
+.c-ttl{font-size:15px;font-weight:700;color:var(--text);letter-spacing:.8px;}
+.c-sub{font-size:10px;color:var(--text3);font-family:'JetBrains Mono',monospace;}
+
+/* Star Favourite */
+.fav-btn{
+  position:absolute;top:14px;right:14px;background:none;border:none;
+  cursor:pointer;font-size:18px;line-height:1;opacity:.3;
+  transition:opacity .3s,transform .3s;padding:3px;z-index:2;
+}
+.fav-btn:hover{opacity:.85;transform:scale(1.25);}
+.fav-btn.on{opacity:1;filter:drop-shadow(0 0 7px gold);}
+
+/* ═══════════════════════════════════════
+   FORM CONTROLS
+═══════════════════════════════════════ */
+.fi{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.fi label{font-size:11px;color:var(--cyan);letter-spacing:.8px;font-family:'JetBrains Mono',monospace;font-weight:700;opacity:.85;}
+[data-theme="light"] .fi label{color:#005fc4;}
+.fi input,.fi select{
+  padding:9px 12px;background:var(--input-bg);border:1px solid rgba(0,245,255,.18);
+  border-radius:8px;color:var(--text);font-family:'Rajdhani',sans-serif;
+  font-size:14px;font-weight:500;outline:none;width:100%;transition:border-color .3s;
+}
+[data-theme="light"] .fi input,[data-theme="light"] .fi select{border-color:rgba(0,100,200,.22);color:#0d1f3c;}
+.fi input:focus,.fi select:focus{border-color:var(--cyan);box-shadow:0 0 10px rgba(0,245,255,.18);}
+[data-theme="light"] .fi input:focus,[data-theme="light"] .fi select:focus{border-color:#005fc4;box-shadow:0 0 10px rgba(0,100,200,.15);}
+.fi select option{background:var(--bg2);color:var(--text);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;}
+
+/* ═══════════════════════════════════════
+   BUTTONS
+═══════════════════════════════════════ */
+.btn{
+  width:100%;padding:10px;border:none;border-radius:8px;
+  font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:1px;
+  cursor:pointer;text-transform:uppercase;transition:all .3s;
+  background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;
+}
+.btn:hover{background:linear-gradient(135deg,var(--gold),#bb8800);transform:scale(1.02);box-shadow:0 0 22px rgba(255,215,0,.4);}
+.btn-gr{background:linear-gradient(135deg,var(--green),#00664d);color:#000;}
+.btn-rd{background:rgba(255,68,102,.14);color:var(--red);border:1px solid rgba(255,68,102,.35);}
+.btn-rd:hover{background:rgba(255,68,102,.28);transform:scale(1.02);box-shadow:none;}
+.btn-pdf{
+  background:linear-gradient(135deg,rgba(0,245,255,.08),rgba(0,245,255,.03));
+  color:var(--cyan);border:1px solid var(--cyan);
+  margin-top:8px;display:none;
+}
+.btn-pdf:hover{background:linear-gradient(135deg,rgba(0,245,255,.18),rgba(0,245,255,.08));box-shadow:0 0 20px rgba(0,245,255,.28);transform:scale(1.02);}
+[data-theme="light"] .btn-pdf{color:#005fc4;border-color:#005fc4;background:rgba(0,100,200,.07);}
+.btn-row{display:flex;gap:8px;margin-top:8px;}
+
+/* ═══════════════════════════════════════
+   RESULTS
+═══════════════════════════════════════ */
+.res-box{
+  margin-top:12px;padding:12px;background:var(--result-bg);
+  border:1px solid rgba(0,245,255,.14);border-radius:8px;min-height:44px;
+  font-family:'JetBrains Mono',monospace;font-size:13px;color:var(--cyan);
+  word-break:break-word;line-height:1.65;
+}
+.res-box.ok{color:var(--green);border-color:rgba(0,255,136,.2);}
+.res-box.er{color:var(--red);border-color:rgba(255,68,102,.2);}
+[data-theme="light"] .res-box{color:#005fc4;}
+[data-theme="light"] .res-box.ok{color:#006633;border-color:rgba(0,140,80,.25);}
+[data-theme="light"] .res-box.er{color:#cc002b;border-color:rgba(200,0,50,.25);}
+
+/* ═══════════════════════════════════════
+   CHART AREAS
+═══════════════════════════════════════ */
+.chart-wrap{
+  margin-top:14px;background:var(--chart-bg);border:1px solid var(--border2);
+  border-radius:10px;padding:14px;display:none;
+}
+.chart-wrap.show{display:block;}
+.chart-lbl{font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:700;color:var(--cyan);letter-spacing:2px;margin-bottom:10px;text-transform:uppercase;}
+[data-theme="light"] .chart-lbl{color:#005fc4;}
+[data-theme="light"] .chart-wrap{background:rgba(240,248,255,.7);}
+
+/* ═══════════════════════════════════════
+   CALCULATOR
+═══════════════════════════════════════ */
+.calc-disp{
+  background:#000;border:1px solid var(--border);border-radius:10px;
+  padding:14px;margin-bottom:12px;text-align:right;
+  font-family:'JetBrains Mono',monospace;min-height:58px;
+}
+[data-theme="light"] .calc-disp{background:#f5f8ff;border-color:rgba(0,100,200,.25);}
+.calc-expr{font-size:11px;color:var(--text3);min-height:14px;}
+.calc-val{font-size:26px;color:var(--cyan);}
+[data-theme="light"] .calc-val{color:#005fc4;}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;}
+.cb{
+  padding:11px;border:1px solid var(--border);border-radius:7px;
+  background:rgba(255,255,255,.05);color:var(--text);
+  font-size:14px;font-weight:600;cursor:pointer;
+  transition:all .2s;font-family:'Rajdhani',sans-serif;
+}
+.cb:hover{background:rgba(0,245,255,.14);border-color:var(--cyan);}
+.cb.op{color:var(--cyan);}
+.cb.eq{background:linear-gradient(135deg,var(--cyan),#0099bb);color:#000;border-color:var(--cyan);}
+.cb.eq:hover{background:linear-gradient(135deg,var(--gold),#bb8800);}
+.cb.clr{color:var(--red);}
+.cb.s2{grid-column:span 2;}
+[data-theme="light"] .cb{background:rgba(0,100,200,.06);color:#0d1f3c;border-color:rgba(0,100,200,.2);}
+[data-theme="light"] .cb:hover{background:rgba(0,100,200,.15);}
+[data-theme="light"] .cb.op{color:#005fc4;}
+
+/* Password */
+.pass-disp{
+  background:#000;border:1px solid var(--border);border-radius:8px;
+  padding:11px 13px;font-family:'JetBrains Mono',monospace;font-size:13px;
+  color:var(--cyan);word-break:break-all;min-height:44px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+[data-theme="light"] .pass-disp{background:#f5f8ff;color:#005fc4;}
+.pass-copy{
+  flex-shrink:0;padding:5px 10px;background:rgba(0,245,255,.1);
+  border:1px solid var(--border);border-radius:5px;
+  color:var(--cyan);cursor:pointer;font-size:11px;transition:all .2s;
+}
+.pass-copy:hover{background:rgba(0,245,255,.22);}
+.str-bar{height:6px;border-radius:3px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:8px;}
+.str-fill{height:100%;border-radius:3px;transition:all .4s;width:0;}
+.str-txt{font-size:12px;font-weight:700;margin-top:5px;font-family:'JetBrains Mono',monospace;}
+
+/* Converter tabs */
+.conv-tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;}
+.ctab{
+  padding:5px 12px;border-radius:20px;font-size:11px;font-weight:700;
+  border:1px solid var(--border);background:transparent;
+  color:var(--text2);cursor:pointer;transition:all .2s;letter-spacing:.8px;font-family:'Rajdhani',sans-serif;
+}
+.ctab.on{background:rgba(0,245,255,.12);color:var(--cyan);border-color:var(--cyan);}
+[data-theme="light"] .ctab.on{background:rgba(0,100,200,.1);color:#005fc4;border-color:#005fc4;}
+
+.radio-g{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.radio-g label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;color:var(--text2);font-weight:600;}
+.radio-g input[type=radio]{accent-color:var(--cyan);}
+
+.big-res{font-size:40px;text-align:center;margin:8px 0;}
+@keyframes popIn{from{transform:scale(.5) rotate(-15deg);opacity:0}to{transform:scale(1) rotate(0);opacity:1}}
+
+.tmr-disp{
+  font-family:'Orbitron',monospace;font-size:34px;text-align:center;
+  color:var(--cyan);text-shadow:0 0 20px var(--cyan);
+  padding:14px;margin:8px 0;letter-spacing:4px;
+}
+.tmr-btns{display:flex;gap:8px;}
+.tmr-btns .btn{flex:1;}
+
+/* Tip box */
+.tip{
+  font-size:11px;color:rgba(255,215,0,.75);margin-bottom:10px;
+  font-family:'JetBrains Mono',monospace;
+  background:rgba(255,215,0,.055);padding:8px;border-radius:6px;
+  border:1px solid rgba(255,215,0,.15);line-height:1.6;
+}
+[data-theme="light"] .tip{color:#886600;background:rgba(180,130,0,.07);border-color:rgba(180,130,0,.2);}
+
+/* ═══════════════════════════════════════
+   TOGGLE SWITCH
+═══════════════════════════════════════ */
+.tgl-row{
+  display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  padding:8px 10px;background:rgba(0,245,255,.04);
+  border:1px solid var(--border2);border-radius:8px;
+}
+.tgl-lbl{font-size:12px;color:var(--text2);font-family:'JetBrains Mono',monospace;letter-spacing:.5px;flex:1;}
+.tgl-sw{position:relative;display:inline-block;width:44px;height:22px;}
+.tgl-sw input{opacity:0;width:0;height:0;}
+.tgl-sl{
+  position:absolute;cursor:pointer;inset:0;
+  background:rgba(255,255,255,.1);border-radius:22px;
+  transition:.3s;border:1px solid var(--border2);
+}
+.tgl-sl::before{
+  position:absolute;content:'';height:16px;width:16px;
+  left:2px;bottom:2px;background:rgba(255,255,255,.35);
+  border-radius:50%;transition:.3s;
+}
+.tgl-sw input:checked + .tgl-sl{background:rgba(0,245,255,.2);border-color:var(--cyan);}
+.tgl-sw input:checked + .tgl-sl::before{transform:translateX(22px);background:var(--cyan);}
+
+/* ═══════════════════════════════════════
+   BIGHA STATE SELECTOR
+═══════════════════════════════════════ */
+.bigha-wrap{
+  display:none;padding:10px;margin-bottom:12px;
+  background:rgba(255,215,0,.05);border:1px solid rgba(255,215,0,.2);border-radius:8px;
+}
+.bigha-wrap.show{display:block;}
+.bigha-note{font-size:11px;color:rgba(255,215,0,.7);font-family:'JetBrains Mono',monospace;margin-top:6px;line-height:1.55;}
+
+/* ═══════════════════════════════════════
+   CONTACT + FOOTER
+═══════════════════════════════════════ */
+.contact-sec{position:relative;z-index:1;max-width:1100px;margin:0 auto 60px;padding:0 5%;}
+.contact-in{
+  background:linear-gradient(135deg,rgba(0,245,255,.04),rgba(255,0,204,.04));
+  border:1px solid var(--border);border-radius:24px;padding:50px 40px;text-align:center;
+  position:relative;overflow:hidden;
+}
+.contact-in::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),var(--magenta),transparent);}
+.contact-ttl{font-family:'Orbitron',monospace;font-size:clamp(22px,3vw,34px);font-weight:900;background:linear-gradient(135deg,var(--cyan),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px;}
+.contact-sub{color:var(--text2);font-size:15px;margin-bottom:35px;font-weight:500;letter-spacing:.8px;}
+.contact-links{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;}
+.c-link{
+  display:flex;align-items:center;gap:10px;padding:14px 28px;border-radius:50px;
+  text-decoration:none;font-size:14px;font-weight:700;letter-spacing:.8px;
+  transition:all .35s;border:1px solid var(--border);color:var(--text);
+  background:rgba(255,255,255,.04);
+}
+.c-link:hover{transform:translateY(-4px);box-shadow:0 10px 30px rgba(0,0,0,.35),0 0 20px rgba(0,245,255,.18);}
+.c-link.em{border-color:rgba(0,245,255,.4);color:var(--cyan);}
+.c-link.em:hover{background:rgba(0,245,255,.09);}
+footer{
+  position:relative;z-index:1;background:var(--footer-bg);
+  border-top:1px solid var(--border);padding:22px 5%;text-align:center;
+}
+.ft-txt{font-family:'JetBrains Mono',monospace;font-size:11px;color:var(--text3);letter-spacing:1px;}
+.ft-nm{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;background:linear-gradient(135deg,var(--cyan),var(--magenta));-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+
+/* ═══════════════════════════════════════
+   FADE ANIMATIONS
+═══════════════════════════════════════ */
+.fade-up{opacity:1;transform:translateY(0);}
+.jl .fade-up{opacity:0;transform:translateY(28px);transition:opacity .65s cubic-bezier(.4,0,.2,1),transform .65s cubic-bezier(.4,0,.2,1);}
+.jl .fade-up.vis{opacity:1;transform:translateY(0);}
+.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}
+
+/* ═══════════════════════════════════════
+   MOBILE BOTTOM NAV
+═══════════════════════════════════════ */
+.mob-nav{
+  display:none;position:fixed;bottom:0;left:0;right:0;
+  background:rgba(5,5,16,.97);backdrop-filter:blur(24px);
+  border-top:1px solid var(--border);z-index:998;
+  padding:8px 0 max(8px, env(safe-area-inset-bottom));
+}
+[data-theme="light"] .mob-nav{background:rgba(237,242,255,.98);}
+.mob-nav ul{display:flex;justify-content:space-around;list-style:none;}
+.mob-nav a{
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  text-decoration:none;color:var(--text3);font-size:10px;font-weight:600;
+  font-family:'Rajdhani',sans-serif;letter-spacing:.3px;padding:4px 8px;
+  border-radius:10px;transition:all .25s;
+}
+.mob-nav a .mi{font-size:20px;line-height:1;}
+.mob-nav a:hover,.mob-nav a.act{color:var(--cyan);}
+[data-theme="light"] .mob-nav a:hover,[data-theme="light"] .mob-nav a.act{color:#005fc4;}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE — MOBILE FIRST
+═══════════════════════════════════════ */
+@media(max-width:700px){
+  body{padding-bottom:76px;}
+  .mob-nav{display:block;}
+  nav.topnav{height:auto;min-height:54px;padding:8px 3%;}
+  nav.topnav.scrolled{min-height:46px;}
+  .nav-links{display:none;}
+  .nav-logo{font-size:11px;}
+  .theme-btn .t-lbl{display:none;}
+  .theme-btn{padding:5px 9px;font-size:12px;}
+  .clock-w{padding:4px 8px;}
+  .clk-time{font-size:13px;letter-spacing:2px;}
+  .hero{flex-direction:column;align-items:center;text-align:center;padding:40px 4% 28px;gap:28px;}
+  .hero-photo-frame{width:128px;height:128px;}
+  .hero-av-ring{top:-10px;left:-10px;right:-10px;bottom:-10px;}
+  .hero-bio{border-left:none;border-top:2px solid var(--cyan);padding:12px 0 0;text-align:left;}
+  .hero-tags{justify-content:center;}
+  .cards-grid{grid-template-columns:1fr;}
+  .row2,.row3{grid-template-columns:1fr;}
+  .contact-links{flex-direction:column;align-items:center;}
+  .contact-in{padding:30px 16px;}
+  .sec-wrap{padding:0 4% 46px;}
+  .sec-ttl{font-size:14px;}
+  .cb{padding:9px 5px;font-size:13px;}
+  .tmr-disp{font-size:26px;}
+  .conv-tabs{gap:4px;}
+  .ctab{padding:4px 9px;font-size:10px;}
+  .btn-row{flex-direction:column;}
+  .calc-val{font-size:22px;}
+}
+@media(max-width:380px){
+  .hero-name{font-size:22px;}
+  .cb{padding:8px 3px;font-size:12px;}
+  .photo-initials{font-size:32px;}
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOADING SCREEN ══ -->
+<div id="loadScreen">
+  <div class="ls-nebula"></div>
+  <div id="lsStars" class="ls-stars"></div>
+  <div class="ls-body">
+    <div class="ls-rings">
+      <div class="ls-ring r1"></div>
+      <div class="ls-ring r2"></div>
+      <div class="ls-ring r3"></div>
+      <div class="ls-core">⚡</div>
+    </div>
+    <div class="ls-title">RK TECH LAB</div>
+    <div class="ls-sub">INITIALIZING UNIVERSE</div>
+    <div class="ls-bar-wrap"><div class="ls-bar" id="lsBar"></div></div>
+    <div class="ls-pct" id="lsPct">0%</div>
+    <div class="ls-status" id="lsStatus">Booting cosmos...</div>
+  </div>
+</div>
+
+<!-- ══ BACKGROUNDS ══ -->
+<div class="bg-mesh"></div>
+<canvas id="pCanvas"></canvas>
+<div class="bg-grid"></div>
+<div class="bg-orbs"><div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div></div>
+
+<!-- ══ TOP NAV ══ -->
+<nav class="topnav">
+  <div class="nav-logo">⚡ RK TECH LAB</div>
+  <div class="nav-links">
+    <a href="#games">🎮 Games</a>
+    <a href="#tools">🛠 Tools</a>
+    <a href="#finance">💰 Finance</a>
+    <a href="#convert">🔄 Convert</a>
+    <a href="#contact">📬 Contact</a>
+  </div>
+  <div class="nav-right">
+    <button class="theme-btn" id="themeBtn">
+      <span id="thIco">☀️</span><span class="t-lbl" id="thLbl">Light</span>
+    </button>
+    <div class="clock-w">
+      <div class="clk-time" id="clkTime">--:--:--</div>
+      <div class="clk-date-row">
+        <div class="clk-date" id="clkDate">---</div>
+        <div class="clk-ampm" id="clkAmpm">--</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- ══ HERO ══ -->
+<section class="hero fade-up d1">
+  <div class="hero-av-wrap">
+    <div class="hero-av-ring"></div>
+    <div class="hero-photo-frame">
+      <!--
+        ╔══════════════════════════════════════════════╗
+        ║  APNI PHOTO LAGANE KE LIYE:                  ║
+        ║  1. Apna image file isi HTML file ke         ║
+        ║     saath rakhein (e.g., ramkrishna.jpg)     ║
+        ║  2. Neeche src="" mein apna                  ║
+        ║     file name likhein:                       ║
+        ║     src="ramkrishna.jpg"                     ║
+        ╚══════════════════════════════════════════════╝
+      -->
+      <img id="heroImg" src="" alt="Ramkrishna Parmar"
+           onerror="this.style.display='none';document.getElementById('heroFb').style.display='flex';"
+           onload="document.getElementById('heroFb').style.display='none';"
+           style="display:none;">
+      <div class="hero-photo-fb" id="heroFb">
+        <div class="photo-initials">RK</div>
+        <div class="photo-lbl">RAMKRISHNA</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-text">
+    <div class="hero-greeting">// Hello, World!</div>
+    <h1 class="hero-name">Ramkrishna<br>Parmar</h1>
+    <div class="hero-title">Developer &amp; Tech Creator</div>
+    <p class="hero-bio">Welcome to my Tech Lab — a collection of fully working, hand-coded projects built with passion and curiosity. Every single tool here is crafted by me, from scratch, to solve real problems and showcase what code can truly do.</p>
+    <div class="hero-tags">
+      <span class="tag">Python</span>
+      <span class="tag">JavaScript</span>
+      <span class="tag">HTML / CSS</span>
+      <span class="tag">Problem Solver</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- ══ GAMES ══ -->
+<div class="sec-wrap" id="games">
+  <div class="sec-hdr fade-up d2">
+    <div class="sec-ico">🎮</div>
+    <div class="sec-ttl">FUN <span>PROJECTS</span></div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="cards-grid">
+
+    <div class="card fade-up d2" data-tid="coin-toss">
+      <button class="fav-btn" data-fid="coin-toss">⭐</button>
+      <div class="c-hdr"><div class="c-ico">🪙</div><div><div class="c-ttl">Coin Toss</div><div class="c-sub">CHANCE SIMULATION</div></div></div>
+      <div id="coinBig" class="big-res" style="min-height:50px;"></div>
+      <button class="btn" id="btnCoin">Toss the Coin</button>
+      <div class="res-box" id="coinRes">Press button to toss...</div>
+    </div>
+
+    <div class="card fade-up d3" data-tid="dice-roll">
+      <button class="fav-btn" data-fid="dice-roll">⭐</button>
+      <div class="c-hdr"><div class="c-ico">🎲</div><div><div class="c-ttl">Dice Roll</div><div class="c-sub">6-SIDED DIE</div></div></div>
+      <div id="diceBig" class="big-res" style="min-height:50px;"></div>
+      <button class="btn" id="btnDice">Roll Dice</button>
+      <div class="res-box" id="diceRes">Press button to roll...</div>
+    </div>
+
+    <div class="card fade-up d4" data-tid="timer">
+      <button class="fav-btn" data-fid="timer">⭐</button>
+      <div class="c-hdr"><div class="c-ico">⏱️</div><div><div class="c-ttl">Countdown Timer</div><div class="c-sub">LIVE COUNTDOWN</div></div></div>
+      <div class="tmr-disp" id="tmrDisp">00:00</div>
+      <div class="fi"><label>Enter Seconds</label><input type="number" id="tmrIn" placeholder="e.g. 60" min="1"></div>
+      <div class="tmr-btns">
+        <button class="btn btn-gr" id="btnTmrStart">▶ Start</button>
+        <button class="btn btn-rd" id="btnTmrStop">⏹ Stop</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ TOOLS ══ -->
+<div class="sec-wrap" id="tools">
+  <div class="sec-hdr fade-up d2">
+    <div class="sec-ico">🛠️</div>
+    <div class="sec-ttl">SMART <span>TOOLS</span></div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="cards-grid">
+
+    <!-- Calculator -->
+    <div class="card fade-up d2" data-tid="calculator">
+      <button class="fav-btn" data-fid="calculator">⭐</button>
+      <div class="c-hdr"><div class="c-ico">🧮</div><div><div class="c-ttl">Advanced Calculator</div><div class="c-sub">FULL SCIENTIFIC</div></div></div>
+      <div class="calc-disp">
+        <div class="calc-expr" id="cExprD"></div>
+        <div class="calc-val" id="cValD">0</div>
+      </div>
+      <div class="calc-grid">
+        <button class="cb clr" data-a="clr">AC</button>
+        <button class="cb op" data-a="op" data-v="(">(</button>
+        <button class="cb op" data-a="op" data-v=")">)</button>
+        <button class="cb op" data-a="op" data-v="/">÷</button>
+        <button class="cb" data-a="n" data-v="7">7</button>
+        <button class="cb" data-a="n" data-v="8">8</button>
+        <button class="cb" data-a="n" data-v="9">9</button>
+        <button class="cb op" data-a="op" data-v="*">×</button>
+        <button class="cb" data-a="n" data-v="4">4</button>
+        <button class="cb" data-a="n" data-v="5">5</button>
+        <button class="cb" data-a="n" data-v="6">6</button>
+        <button class="cb op" data-a="op" data-v="-">−</button>
+        <button class="cb" data-a="n" data-v="1">1</button>
+        <button class="cb" data-a="n" data-v="2">2</button>
+        <button class="cb" data-a="n" data-v="3">3</button>
+        <button class="cb op" data-a="op" data-v="+">+</button>
+        <button class="cb op" data-a="sqrt">√</button>
+        <button class="cb" data-a="n" data-v="0">0</button>
+        <button class="cb" data-a="n" data-v=".">.</button>
+        <button class="cb eq" data-a="eq">=</button>
+        <button class="cb s2 op" data-a="pow">xⁿ Power</button>
+        <button class="cb s2 op" data-a="pct">% Percent</button>
+      </div>
+    </div>
+
+    <!-- Age Finder WITH TIME -->
+    <div class="card fade-up d3" data-tid="age-finder">
+      <button class="fav-btn" data-fid="age-finder">⭐</button>
+      <div class="c-hdr"><div class="c-ico">🎂</div><div><div class="c-ttl">Age Finder</div><div class="c-sub">EXACT AGE CALCULATOR</div></div></div>
+      <div class="fi"><label>Your Date of Birth</label><input type="date" id="dobIn"></div>
+      <div class="tgl-row">
+        <span class="tgl-lbl">⏰ Include birth time (precise age)</span>
+        <label class="tgl-sw"><input type="checkbox" id="ageTglCb"><span class="tgl-sl"></span></label>
+      </div>
+      <div id="ageTimeArea" style="display:none;">
+        <div class="fi"><label>Time of Birth</label><input type="time" id="dobTime" value="00:00"></div>
+      </div>
+      <button class="btn" id="btnAge">Calculate My Age</button>
+      <div class="res-box" id="ageRes">Select your birth date above...</div>
+    </div>
+
+    <!-- Password Generator -->
+    <div class="card fade-up d4" data-tid="password-gen">
+      <button class="fav-btn" data-fid="password-gen">⭐</button>
+      <div class="c-hdr"><div class="c-ico">🔐</div><div><div class="c-ttl">Password Generator</div><div class="c-sub">+ STRENGTH CHECKER</div></div></div>
+      <div class="fi">
+        <label>Length: <span id="passLenV">14</span> characters</label>
+        <input type="range" id="passLen" min="6" max="32" value="14" style="width:100%;accent-color:var(--cyan);">
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;font-size:12px;font-family:'Rajdhani',sans-serif;font-weight:600;">
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;color:var(--text2);"><input type="checkbox" id="pUp" checked style="accent-color:var(--cyan);">Uppercase</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;color:var(--text2);"><input type="checkbox" id="pNum" checked style="accent-color:var(--cyan);">Numbers</label>
+        <label style="display:flex;align-items:center;gap:4px;cursor:pointer;color:var(--text2);"><input type="checkbox" id="pSym" checked style="accent-color:var(--cyan);">Symbols</label>
+      </div>
+      <div class="pass-disp">
+        <span id="passOut" style="flex:1;">Click Generate...</span>
+        <button class="pass-copy" id="passCopy">📋 Copy</button>
+      </div>
+      <button class="btn" id="btnPass" style="margin-top:10px;">⚡ Generate Password</button>
+      <div style="margin-top:10px;">
+        <div style="font-size:10px;color:var(--text3);letter-spacing:1px;font-family:'JetBrains Mono',monospace;">GENERATED PASSWORD STRENGTH</div>
+        <div class="str-bar"><div class="str-fill" id="strFill"></div></div>
+        <div class="str-txt" id="strTxt"></div>
+      </div>
+      <div style="margin-top:14px;border-top:1px solid var(--border);padding-top:12px;">
+        <div class="fi"><label>Check Your Own Password</label><input type="text" id="custPass" placeholder="Type any password to check strength..."></div>
+        <div class="str-bar"><div class="str-fill" id="custFill"></div></div>
+        <div class="str-txt" id="custTxt"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ FINANCE ══ -->
+<div class="sec-wrap" id="finance">
+  <div class="sec-hdr fade-up d2">
+    <div class="sec-ico">💰</div>
+    <div class="sec-ttl">FINANCE <span>TOOLS</span></div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="cards-grid">
+
+    <!-- Interest Calculator -->
+    <div class="card fade-up d2" data-tid="interest">
+      <button class="fav-btn" data-fid="interest">⭐</button>
+      <div class="c-hdr"><div class="c-ico">📈</div><div><div class="c-ttl">Interest Calculator</div><div class="c-sub">SIMPLE + COMPOUND</div></div></div>
+      <div class="radio-g">
+        <label><input type="radio" name="intType" value="si" checked> Simple Interest</label>
+        <label><input type="radio" name="intType" value="ci"> Compound Interest</label>
+      </div>
+      <div class="tip">⚡ Fill any 3 fields — the 4th will be auto-calculated!</div>
+      <div class="row2">
+        <div class="fi"><label>Principal (P) — ₹</label><input type="number" id="intP" placeholder="e.g. 10000"></div>
+        <div class="fi"><label>Rate (R) — % Per Year</label><input type="number" id="intR" placeholder="e.g. 8"></div>
+      </div>
+      <div class="row2">
+        <div class="fi"><label>Time (T) — Years</label><input type="number" id="intT" placeholder="e.g. 3"></div>
+        <div class="fi"><label>Interest (I) — ₹</label><input type="number" id="intI" placeholder="e.g. 2400"></div>
+      </div>
+      <button class="btn" id="btnInt">🧮 Find Missing Value</button>
+      <div class="res-box" id="intRes">Fill any 3 values, leave 1 blank...</div>
+      <div class="chart-wrap" id="intCW"><div class="chart-lbl">Principal vs Interest</div><canvas id="intChart" height="180"></canvas></div>
+      <button class="btn btn-pdf" id="btnIntPDF">📄 Download Report</button>
+    </div>
+
+    <!-- EMI Calculator -->
+    <div class="card fade-up d3" data-tid="emi">
+      <button class="fav-btn" data-fid="emi">⭐</button>
+      <div class="c-hdr"><div class="c-ico">🏦</div><div><div class="c-ttl">EMI Calculator</div><div class="c-sub">LOAN MONTHLY PAYMENT</div></div></div>
+      <div class="fi"><label>Loan Amount — ₹</label><input type="number" id="emiL" placeholder="e.g. 500000"></div>
+      <div class="row2">
+        <div class="fi"><label>Interest Rate — % Per Year</label><input type="number" id="emiR" placeholder="e.g. 9"></div>
+        <div class="fi"><label>Duration — Months</label><input type="number" id="emiM" placeholder="e.g. 24"></div>
+      </div>
+      <button class="btn" id="btnEMI">Calculate Monthly EMI</button>
+      <div class="res-box" id="emiRes">Enter loan details above...</div>
+      <div class="chart-wrap" id="emiCW"><div class="chart-lbl">Principal vs Interest Split</div><canvas id="emiChart" height="180"></canvas></div>
+      <button class="btn btn-pdf" id="btnEmiPDF">📄 Download Report</button>
+    </div>
+
+    <!-- Profit & Loss -->
+    <div class="card fade-up d4" data-tid="pl">
+      <button class="fav-btn" data-fid="pl">⭐</button>
+      <div class="c-hdr"><div class="c-ico">📊</div><div><div class="c-ttl">Profit &amp; Loss</div><div class="c-sub">BUSINESS CALCULATOR</div></div></div>
+      <div class="row2">
+        <div class="fi"><label>Cost Price (CP) — ₹</label><input type="number" id="plCP" placeholder="e.g. 800"></div>
+        <div class="fi"><label>Selling Price (SP) — ₹</label><input type="number" id="plSP" placeholder="e.g. 1000"></div>
+      </div>
+      <button class="btn" id="btnPL">Calculate Profit / Loss</button>
+      <div class="res-box" id="plRes">Enter cost and selling price...</div>
+      <div class="chart-wrap" id="plCW"><div class="chart-lbl">Cost vs Revenue</div><canvas id="plChart" height="180"></canvas></div>
+      <button class="btn btn-pdf" id="btnPlPDF">📄 Download Report</button>
+    </div>
+
+    <!-- SIP Calculator -->
+    <div class="card fade-up d2" data-tid="sip">
+      <button class="fav-btn" data-fid="sip">⭐</button>
+      <div class="c-hdr"><div class="c-ico">📅</div><div><div class="c-ttl">SIP Calculator</div><div class="c-sub">SYSTEMATIC INVESTMENT PLAN</div></div></div>
+      <div class="tip">⚡ Fill Monthly SIP + Rate + Time — OR fill Rate + Time + Target Corpus to find required SIP!</div>
+      <div class="fi"><label>Monthly Investment (P) — ₹ <span style="color:var(--text3)">(leave blank to find)</span></label><input type="number" id="sipP" placeholder="e.g. 5000"></div>
+      <div class="row2">
+        <div class="fi"><label>Expected Return — % p.a.</label><input type="number" id="sipR" placeholder="e.g. 12"></div>
+        <div class="fi"><label>Time Period — Years</label><input type="number" id="sipT" placeholder="e.g. 10"></div>
+      </div>
+      <div class="fi"><label>Target Corpus — ₹ <span style="color:var(--text3)">(optional — leave blank to calculate)</span></label><input type="number" id="sipM" placeholder="e.g. 10000000"></div>
+      <button class="btn" id="btnSIP">🚀 Calculate SIP</button>
+      <div class="res-box" id="sipRes">Enter SIP details above...</div>
+      <div class="chart-wrap" id="sipCW"><div class="chart-lbl">Investment Growth Over Time</div><canvas id="sipChart" height="200"></canvas></div>
+      <button class="btn btn-pdf" id="btnSipPDF">📄 Download Report</button>
+    </div>
+
+    <!-- FD Calculator -->
+    <div class="card fade-up d3" data-tid="fd">
+      <button class="fav-btn" data-fid="fd">⭐</button>
+      <div class="c-hdr"><div class="c-ico">🏛️</div><div><div class="c-ttl">FD Calculator</div><div class="c-sub">FIXED DEPOSIT</div></div></div>
+      <div class="tip">⚡ Fill any 3 fields — the 4th will be auto-calculated!</div>
+      <div class="radio-g">
+        <label><input type="radio" name="fdType" value="comp" checked> Compound (Quarterly)</label>
+        <label><input type="radio" name="fdType" value="si"> Simple Interest</label>
+      </div>
+      <div class="row2">
+        <div class="fi"><label>Principal (P) — ₹</label><input type="number" id="fdP" placeholder="e.g. 100000"></div>
+        <div class="fi"><label>Rate (R) — % Per Year</label><input type="number" id="fdR" placeholder="e.g. 7.5"></div>
+      </div>
+      <div class="row2">
+        <div class="fi"><label>Time (T) — Years</label><input type="number" id="fdT" placeholder="e.g. 3"></div>
+        <div class="fi"><label>Maturity Amount — ₹</label><input type="number" id="fdA" placeholder="Leave blank..."></div>
+      </div>
+      <button class="btn" id="btnFD">🏛️ Calculate FD</button>
+      <div class="res-box" id="fdRes">Enter FD details above...</div>
+      <div class="chart-wrap" id="fdCW"><div class="chart-lbl">FD Growth Chart</div><canvas id="fdChart" height="180"></canvas></div>
+      <button class="btn btn-pdf" id="btnFdPDF">📄 Download Report</button>
+    </div>
+
+    <!-- Mutual Fund Calculator -->
+    <div class="card fade-up d4" data-tid="mf">
+      <button class="fav-btn" data-fid="mf">⭐</button>
+      <div class="c-hdr"><div class="c-ico">💹</div><div><div class="c-ttl">Mutual Fund</div><div class="c-sub">LUMPSUM RETURNS</div></div></div>
+      <div class="fi"><label>Lumpsum Investment — ₹</label><input type="number" id="mfP" placeholder="e.g. 100000"></div>
+      <div class="row2">
+        <div class="fi"><label>Expected CAGR — % p.a.</label><input type="number" id="mfR" placeholder="e.g. 15"></div>
+        <div class="fi"><label>Time Horizon — Years</label><input type="number" id="mfT" placeholder="e.g. 10"></div>
+      </div>
+      <button class="btn" id="btnMF">📈 Calculate Returns</button>
+      <div class="res-box" id="mfRes">Enter investment details above...</div>
+      <div class="chart-wrap" id="mfCW"><div class="chart-lbl">Lumpsum Growth Chart</div><canvas id="mfChart" height="180"></canvas></div>
+      <button class="btn btn-pdf" id="btnMfPDF">📄 Download Report</button>
+    </div>
+
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ UNIT CONVERTER ══ -->
+<div class="sec-wrap" id="convert">
+  <div class="sec-hdr fade-up d2">
+    <div class="sec-ico">🔄</div>
+    <div class="sec-ttl">UNIT <span>CONVERTER</span></div>
+    <div class="sec-line"></div>
+  </div>
+  <div class="cards-grid">
+    <div class="card fade-up d2" style="grid-column:1 / -1;">
+      <button class="fav-btn" data-fid="converter">⭐</button>
+      <div class="c-hdr"><div class="c-ico">⚖️</div><div><div class="c-ttl">All-in-One Converter</div><div class="c-sub">WEIGHT · LENGTH · TEMP · AREA · SPEED · TIME · DATA</div></div></div>
+      <div class="conv-tabs" id="convTabs">
+        <button class="ctab on" data-cv="weight">⚖️ Weight</button>
+        <button class="ctab" data-cv="length">📏 Length</button>
+        <button class="ctab" data-cv="temp">🌡️ Temp</button>
+        <button class="ctab" data-cv="area">🗺️ Area</button>
+        <button class="ctab" data-cv="speed">🚀 Speed</button>
+        <button class="ctab" data-cv="time">⏰ Time</button>
+        <button class="ctab" data-cv="data">💾 Data</button>
+      </div>
+      <!-- Bigha state selector - shown only when area + bigha/biswa selected -->
+      <div class="bigha-wrap" id="bighaWrap">
+        <div class="fi" style="margin-bottom:6px;">
+          <label>📍 Select State for Bigha / Biswa Conversion</label>
+          <select id="bighaState">
+            <option value="standard">Standard / MP / Bihar / West Bengal (1337.8 m²)</option>
+            <option value="up_pucca">Uttar Pradesh — Pucca Bigha (2015.9 m²)</option>
+            <option value="up_kachcha">Uttar Pradesh — Kachcha Bigha (1008 m²)</option>
+            <option value="rajasthan">Rajasthan — Pucca Bigha (2529.3 m²)</option>
+            <option value="gujarat">Gujarat (1618 m²)</option>
+            <option value="haryana">Haryana (2508.4 m²)</option>
+            <option value="punjab">Punjab (4200 m²)</option>
+            <option value="himachal">Himachal Pradesh (2015.9 m²)</option>
+            <option value="uttarakhand">Uttarakhand (756.8 m²)</option>
+            <option value="assam">Assam (14175 m²)</option>
+          </select>
+        </div>
+        <div class="bigha-note" id="bighaNote">⚠️ Bigha/Biswa varies by state. State select karo sahi result ke liye. 1 Bigha = 20 Biswa.</div>
+      </div>
+      <div class="row3" style="align-items:end;">
+        <div class="fi"><label>Value to Convert</label><input type="number" id="cvVal" placeholder="Enter number"></div>
+        <div class="fi"><label>From Unit</label><select id="cvFrom"></select></div>
+        <div class="fi"><label>To Unit</label><select id="cvTo"></select></div>
+      </div>
+      <div class="res-box" id="cvRes" style="font-size:16px;text-align:center;padding:16px;min-height:56px;">Select units and enter a value to convert...</div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ══ CONTACT ══ -->
+<section class="contact-sec" id="contact">
+  <div class="contact-in fade-up">
+    <div style="font-size:48px;margin-bottom:16px;">🚀</div>
+    <div class="contact-ttl">Let's Connect!</div>
+    <p class="contact-sub">Got a question, an idea, or just want to say hello?<br>Ramkrishna is always open to a great conversation.</p>
+    <div class="contact-links">
+      <a href="mailto:ramkrishnaparmar81@gmail.com" class="c-link em">
+        <span>📧</span><span>ramkrishnaparmar81@gmail.com</span>
+      </a>
+      <a href="https://github.com" target="_blank" class="c-link" style="border-color:rgba(255,255,255,.2);">
+        <span>💻</span><span>View Projects on GitHub</span>
+      </a>
+    </div>
+    <div style="margin-top:35px;padding-top:28px;border-top:1px solid var(--border);">
+      <p style="font-size:11px;color:var(--text3);font-family:'JetBrains Mono',monospace;letter-spacing:2px;">BUILT WITH ❤️ BY RAMKRISHNA PARMAR · 2026</p>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <p class="ft-txt">© 2026 <span class="ft-nm">Ramkrishna Parmar</span> — All Projects Developed &amp; Designed by Me. No Copies, No Shortcuts.</p>
+</footer>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<nav class="mob-nav" id="mobNav">
+  <ul>
+    <li><a href="#" class="mnl act" data-sec="home" onclick="window.scrollTo({top:0,behavior:'smooth'});return false;"><span class="mi">🏠</span>Home</a></li>
+    <li><a href="#tools" class="mnl" data-sec="tools"><span class="mi">🛠</span>Tools</a></li>
+    <li><a href="#finance" class="mnl" data-sec="finance"><span class="mi">💰</span>Finance</a></li>
+    <li><a href="#convert" class="mnl" data-sec="convert"><span class="mi">🔄</span>Convert</a></li>
+    <li><a href="#contact" class="mnl" data-sec="contact"><span class="mi">📬</span>Contact</a></li>
+  </ul>
+</nav>
+
+<!-- ══ EXTERNAL LIBS ══ -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
+<script>
+/* ═══════════════════════════════════
+   LOADING SCREEN
+═══════════════════════════════════ */
+(function(){
+  var msgs=['Booting cosmos...','Loading quantum particles...','Calibrating dark matter...','Syncing neural nets...','Initializing AI core...','Rendering universe...','Almost there...'];
+  var bar=document.getElementById('lsBar'),pct=document.getElementById('lsPct'),sts=document.getElementById('lsStatus'),sc=document.getElementById('loadScreen');
+  // Stars
+  var sc2=document.getElementById('lsStars');
+  for(var s=0;s<90;s++){
+    var el=document.createElement('div');el.className='ls-star';
+    el.style.cssText='width:'+(Math.random()*2.2+.5)+'px;height:'+(Math.random()*2.2+.5)+'px;top:'+(Math.random()*100)+'%;left:'+(Math.random()*100)+'%;animation-delay:'+(Math.random()*3)+'s;animation-duration:'+(Math.random()*2+1.2)+'s;';
+    sc2.appendChild(el);
+  }
+  var p=0,iv=setInterval(function(){
+    p+=Math.random()*16+4; if(p>100)p=100;
+    bar.style.width=p+'%'; pct.textContent=Math.floor(p)+'%';
+    sts.textContent=msgs[Math.min(Math.floor(p/100*(msgs.length-1)),msgs.length-1)];
+    if(p>=100){clearInterval(iv);setTimeout(function(){sc.classList.add('out');},350);}
+  },75);
+})();
+
+document.addEventListener('DOMContentLoaded',function(){
+
+/* ═══════════════════════════════════
+   DARK / LIGHT THEME
+═══════════════════════════════════ */
+var html=document.documentElement,isDark=true;
+var saved=localStorage.getItem('rk_theme')||'dark';
+html.setAttribute('data-theme',saved); isDark=saved==='dark';
+function updTheme(){
+  document.getElementById('thIco').textContent=isDark?'☀️':'🌙';
+  document.getElementById('thLbl').textContent=isDark?'Light':'Dark';
+}
+updTheme();
+document.getElementById('themeBtn').addEventListener('click',function(){
+  isDark=!isDark;
+  html.setAttribute('data-theme',isDark?'dark':'light');
+  localStorage.setItem('rk_theme',isDark?'dark':'light');
+  updTheme(); refreshChartColors();
+});
+
+/* ═══════════════════════════════════
+   CLOCK
+═══════════════════════════════════ */
+function tick(){
+  var n=new Date(),h=n.getHours(),m=n.getMinutes(),s=n.getSeconds();
+  var ap=h>=12?'PM':'AM',h12=h%12||12;
+  var P=function(x){return String(x).padStart(2,'0');};
+  var days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var mos=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  document.getElementById('clkTime').textContent=P(h12)+':'+P(m)+':'+P(s);
+  document.getElementById('clkAmpm').textContent=ap;
+  document.getElementById('clkDate').textContent=days[n.getDay()]+' '+P(n.getDate())+' '+mos[n.getMonth()]+' '+n.getFullYear();
+}
+tick(); setInterval(tick,1000);
+
+/* ═══════════════════════════════════
+   FAVOURITES — LocalStorage
+═══════════════════════════════════ */
+var favs=JSON.parse(localStorage.getItem('rk_favs')||'[]');
+function syncFavs(){
+  document.querySelectorAll('.fav-btn').forEach(function(b){
+    var id=b.dataset.fid;
+    var on=favs.indexOf(id)>-1;
+    b.classList.toggle('on',on);
+    b.title=on?'Remove from favourites':'Add to favourites';
+  });
+}
+syncFavs();
+document.querySelectorAll('.fav-btn').forEach(function(b){
+  b.addEventListener('click',function(e){
+    e.stopPropagation();
+    var id=b.dataset.fid,ix=favs.indexOf(id);
+    if(ix>-1)favs.splice(ix,1); else favs.push(id);
+    localStorage.setItem('rk_favs',JSON.stringify(favs)); syncFavs();
+  });
+});
+
+/* ═══════════════════════════════════
+   COIN TOSS
+═══════════════════════════════════ */
+document.getElementById('btnCoin').addEventListener('click',function(){
+  var r=Math.random()<.5,b=document.getElementById('coinBig');
+  b.style.animation='none';void b.offsetWidth;
+  b.textContent=r?'🟡':'⚫'; b.style.animation='popIn .4s cubic-bezier(.175,.885,.32,1.275)';
+  var el=document.getElementById('coinRes');
+  el.textContent=r?'Result: Heads 🟡':'Result: Tails ⚫'; el.className='res-box ok';
+});
+
+/* ═══════════════════════════════════
+   DICE ROLL
+═══════════════════════════════════ */
+var diceE=['','⚀','⚁','⚂','⚃','⚄','⚅'];
+document.getElementById('btnDice').addEventListener('click',function(){
+  var r=Math.floor(Math.random()*6)+1,b=document.getElementById('diceBig');
+  b.style.animation='none';void b.offsetWidth;
+  b.textContent=diceE[r]; b.style.animation='popIn .4s cubic-bezier(.175,.885,.32,1.275)';
+  var el=document.getElementById('diceRes');
+  el.textContent='You rolled: '+r; el.className='res-box ok';
+});
+
+/* ═══════════════════════════════════
+   COUNTDOWN TIMER
+═══════════════════════════════════ */
+var tmrIv=null,tmrS=0;
+function showTmr(s){
+  var m=Math.floor(s/60);
+  document.getElementById('tmrDisp').textContent=String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
+}
+document.getElementById('btnTmrStart').addEventListener('click',function(){
+  clearInterval(tmrIv);
+  var v=parseInt(document.getElementById('tmrIn').value);
+  if(!v||v<1)return; tmrS=v;
+  var td=document.getElementById('tmrDisp');
+  td.style.color='var(--green)';td.style.textShadow='0 0 20px var(--green)';
+  showTmr(tmrS);
+  tmrIv=setInterval(function(){
+    tmrS--;
+    if(tmrS<=0){clearInterval(tmrIv);td.textContent="⏰ TIME'S UP!";td.style.color='var(--magenta)';return;}
+    showTmr(tmrS);
+  },1000);
+});
+document.getElementById('btnTmrStop').addEventListener('click',function(){
+  clearInterval(tmrIv);tmrS=0;
+  var td=document.getElementById('tmrDisp');
+  td.textContent='00:00';td.style.color='var(--cyan)';td.style.textShadow='0 0 20px var(--cyan)';
+});
+
+/* ═══════════════════════════════════
+   ADVANCED CALCULATOR
+═══════════════════════════════════ */
+var cE='',cC='0',cJ=false;
+document.querySelector('.calc-grid').addEventListener('click',function(e){
+  var b=e.target.closest('[data-a]');if(!b)return;
+  var a=b.dataset.a,v=b.dataset.v;
+  if(a==='n'){if(cJ){cE='';cC='0';cJ=false;}cC=(cC==='0'&&v!=='.')?v:cC+v;document.getElementById('cValD').textContent=cC;}
+  else if(a==='op'){cJ=false;cE+=cC+' '+v+' ';cC='0';document.getElementById('cExprD').textContent=cE;document.getElementById('cValD').textContent='0';}
+  else if(a==='eq'){try{var f=cE+cC,r=Function('"use strict";return('+f+')')();var rr=parseFloat(r.toFixed(10));document.getElementById('cExprD').textContent=f+' =';document.getElementById('cValD').textContent=rr;cC=String(rr);cE='';cJ=true;}catch(ex){document.getElementById('cValD').textContent='ERROR';cE='';cC='0';}}
+  else if(a==='clr'){cE='';cC='0';cJ=false;document.getElementById('cExprD').textContent='';document.getElementById('cValD').textContent='0';}
+  else if(a==='sqrt'){var vv=parseFloat(cC);if(vv<0){document.getElementById('cValD').textContent='ERROR';return;}var rr2=parseFloat(Math.sqrt(vv).toFixed(10));document.getElementById('cExprD').textContent='√('+vv+') =';document.getElementById('cValD').textContent=rr2;cC=String(rr2);cJ=true;}
+  else if(a==='pct'){var pv=parseFloat(cC)/100;cC=String(pv);document.getElementById('cValD').textContent=pv;}
+  else if(a==='pow'){var base=parseFloat(cC),es=prompt('Enter exponent:');if(es===null)return;var exp=parseFloat(es),rp=parseFloat(Math.pow(base,exp).toFixed(10));document.getElementById('cExprD').textContent=base+' ^ '+exp+' =';document.getElementById('cValD').textContent=rp;cC=String(rp);cJ=true;}
+});
+
+/* ═══════════════════════════════════
+   AGE FINDER + TIME TOGGLE
+═══════════════════════════════════ */
+var ageTgl=document.getElementById('ageTglCb');
+ageTgl.addEventListener('change',function(){
+  document.getElementById('ageTimeArea').style.display=this.checked?'block':'none';
+});
+document.getElementById('btnAge').addEventListener('click',function(){
+  var dv=document.getElementById('dobIn').value,el=document.getElementById('ageRes');
+  if(!dv){el.textContent='Please select a birth date!';el.className='res-box er';return;}
+  var useTime=ageTgl.checked,tv=document.getElementById('dobTime').value||'00:00';
+  var dob=new Date(dv+'T'+tv);var now=new Date();
+  if(isNaN(dob)){el.textContent='Invalid date!';el.className='res-box er';return;}
+  if(dob>now){el.textContent='Birth date cannot be in the future!';el.className='res-box er';return;}
+  var diffMs=now-dob;
+  var totSec=Math.floor(diffMs/1000),totMin=Math.floor(totSec/60),totHr=Math.floor(totMin/60),totDay=Math.floor(totHr/24);
+  var y=now.getFullYear()-dob.getFullYear();
+  var mo=now.getMonth()-dob.getMonth();
+  var d=now.getDate()-dob.getDate();
+  var hr=now.getHours()-dob.getHours();
+  var mn=now.getMinutes()-dob.getMinutes();
+  if(mn<0){hr--;mn+=60;}if(hr<0){d--;hr+=24;}if(d<0){mo--;d+=new Date(now.getFullYear(),now.getMonth(),0).getDate();}if(mo<0){y--;mo+=12;}
+  var out='🎂 Age: <strong>'+y+' Years, '+mo+' Months, '+d+' Days</strong>';
+  if(useTime)out+=', <strong>'+hr+' Hours, '+mn+' Minutes</strong>';
+  out+='<br>📅 Total Days: <strong>'+totDay.toLocaleString()+'</strong>';
+  if(useTime){out+='<br>⏰ Total Hours: <strong>'+totHr.toLocaleString()+'</strong>';out+='<br>🕐 Total Minutes: <strong>'+totMin.toLocaleString()+'</strong>';}
+  el.innerHTML=out; el.className='res-box ok';
+});
+
+/* ═══════════════════════════════════
+   PASSWORD GENERATOR
+═══════════════════════════════════ */
+document.getElementById('passLen').addEventListener('input',function(){document.getElementById('passLenV').textContent=this.value;});
+function getStr(p){var s=0;if(p.length>=8)s++;if(p.length>=12)s++;if(p.length>=16)s++;if(p.length>=20)s++;if(/[A-Z]/.test(p))s++;if(/[0-9]/.test(p))s++;if(/[^a-zA-Z0-9]/.test(p))s++;return Math.min(s,6);}
+function showStr(score,fId,tId){
+  var lvls=[{w:'14%',c:'#ff2244',t:'Very Weak 💀'},{w:'28%',c:'#ff6622',t:'Weak 😟'},{w:'45%',c:'#ffaa00',t:'Fair 😐'},{w:'62%',c:'#aacc00',t:'Good 🙂'},{w:'78%',c:'#44dd88',t:'Strong 💪'},{w:'90%',c:'#00ff88',t:'Very Strong 🔥'},{w:'100%',c:'#00f5ff',t:'Excellent 🔒'}];
+  var l=lvls[score];document.getElementById(fId).style.width=l.w;document.getElementById(fId).style.background=l.c;document.getElementById(tId).textContent=l.t;document.getElementById(tId).style.color=l.c;
+}
+document.getElementById('btnPass').addEventListener('click',function(){
+  var len=parseInt(document.getElementById('passLen').value);
+  var ch='abcdefghijklmnopqrstuvwxyz';
+  if(document.getElementById('pUp').checked)ch+='ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+  if(document.getElementById('pNum').checked)ch+='0123456789';
+  if(document.getElementById('pSym').checked)ch+='!@#$%^&*()-_=+[]{}|;:,.<>?';
+  var p=''; for(var i=0;i<len;i++)p+=ch[Math.floor(Math.random()*ch.length)];
+  document.getElementById('passOut').textContent=p; showStr(getStr(p),'strFill','strTxt');
+});
+document.getElementById('passCopy').addEventListener('click',function(){
+  var p=document.getElementById('passOut').textContent,btn=this;
+  if(p==='Click Generate...')return;
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(p).then(function(){btn.textContent='✅ Copied!';setTimeout(function(){btn.textContent='📋 Copy';},2000);});}
+  else{var ta=document.createElement('textarea');ta.value=p;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);btn.textContent='✅ Copied!';setTimeout(function(){btn.textContent='📋 Copy';},2000);}
+});
+document.getElementById('custPass').addEventListener('input',function(){
+  if(!this.value){document.getElementById('custFill').style.width='0';document.getElementById('custTxt').textContent='';return;}
+  showStr(getStr(this.value),'custFill','custTxt');
+});
+
+/* ═══════════════════════════════════
+   CHART HELPERS
+═══════════════════════════════════ */
+var charts={};
+function txtCol(){return isDark?'#c0e8ea':'#1a3050';}
+function gridCol(){return isDark?'rgba(180,200,220,.14)':'rgba(0,100,180,.12)';}
+function makeChart(id,cfg){
+  if(charts[id])charts[id].destroy();
+  charts[id]=new Chart(document.getElementById(id).getContext('2d'),cfg);
+  return charts[id];
+}
+function refreshChartColors(){
+  Object.keys(charts).forEach(function(id){
+    var ch=charts[id];if(!ch)return;
+    var t=txtCol(),g=gridCol();
+    if(ch.options.plugins&&ch.options.plugins.legend)ch.options.plugins.legend.labels.color=t;
+    if(ch.options.scales)Object.values(ch.options.scales).forEach(function(sc){if(sc.ticks)sc.ticks.color=t;if(sc.grid)sc.grid.color=g;});
+    ch.update();
+  });
+}
+function fmt(v){return v>=1e7?'₹'+(v/1e7).toFixed(2)+'Cr':v>=1e5?'₹'+(v/1e5).toFixed(2)+'L':'₹'+Math.round(v).toLocaleString('en-IN');}
+
+/* ═══════════════════════════════════
+   INTEREST CALCULATOR
+═══════════════════════════════════ */
+document.getElementById('btnInt').addEventListener('click',function(){
+  var type=document.querySelector('input[name="intType"]:checked').value;
+  var P=document.getElementById('intP').value===''?null:+document.getElementById('intP').value;
+  var R=document.getElementById('intR').value===''?null:+document.getElementById('intR').value;
+  var T=document.getElementById('intT').value===''?null:+document.getElementById('intT').value;
+  var I=document.getElementById('intI').value===''?null:+document.getElementById('intI').value;
+  var res=document.getElementById('intRes');
+  var bl=[P,R,T,I].filter(function(x){return x===null;}).length;
+  if(bl!==1){res.textContent='Exactly 3 fields bharo, 1 blank rakhna!';res.className='res-box er';return;}
+  var ans='',cP=P,cI=I;
+  if(type==='si'){
+    if(P===null){var v=(I*100)/(R*T);ans='✅ Principal (P) = ₹'+v.toFixed(2)+'<br>💡 Total Amount = ₹'+(v+I).toFixed(2);cP=v;}
+    else if(R===null)ans='✅ Rate (R) = '+((I*100)/(P*T)).toFixed(4)+'% per year';
+    else if(T===null)ans='✅ Time (T) = '+((I*100)/(P*R)).toFixed(4)+' years';
+    else{var si=(P*R*T)/100;ans='✅ Simple Interest = ₹'+si.toFixed(2)+'<br>💡 Total Amount = ₹'+(P+si).toFixed(2);cI=si;}
+  }else{
+    if(P===null){var ci2=I/(Math.pow(1+R/100,T)-1);ans='✅ Principal (P) = ₹'+ci2.toFixed(2);cP=ci2;}
+    else if(R===null){var lo=0,hi=1000,mid=500;for(var k=0;k<300;k++){mid=(lo+hi)/2;var ci3=P*(Math.pow(1+mid/100,T)-1);if(ci3<I)lo=mid;else hi=mid;}ans='✅ Rate (R) ≈ '+mid.toFixed(4)+'% per year';}
+    else if(T===null){var tv=Math.log(1+(I/P))/Math.log(1+R/100);ans='✅ Time (T) = '+tv.toFixed(4)+' years';}
+    else{var cv=P*(Math.pow(1+R/100,T)-1);ans='✅ Compound Interest = ₹'+cv.toFixed(2)+'<br>💡 Total Amount = ₹'+(P+cv).toFixed(2);cI=cv;}
+  }
+  res.innerHTML=ans;res.className='res-box ok';
+  if(cP&&cI){
+    document.getElementById('intCW').classList.add('show');
+    document.getElementById('btnIntPDF').style.display='block';
+    makeChart('intChart',{type:'doughnut',data:{labels:['Principal','Interest'],datasets:[{data:[cP,cI],backgroundColor:['rgba(0,245,255,.7)','rgba(255,215,0,.7)'],borderColor:['#00f5ff','#ffd700'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:txtCol(),font:{family:'Rajdhani',size:13}}}}}});
+  }
+  window._iPDF={type,P:cP,R,T,I:cI};
+});
+
+/* ═══════════════════════════════════
+   EMI CALCULATOR
+═══════════════════════════════════ */
+document.getElementById('btnEMI').addEventListener('click',function(){
+  var P=+document.getElementById('emiL').value,aR=+document.getElementById('emiR').value,N=+document.getElementById('emiM').value;
+  var res=document.getElementById('emiRes');
+  if(!P||!aR||!N){res.textContent='Teeno fields bharo!';res.className='res-box er';return;}
+  var r=aR/12/100,emi=(P*r*Math.pow(1+r,N))/(Math.pow(1+r,N)-1),tot=emi*N,interest=tot-P;
+  res.innerHTML='💳 Monthly EMI = ₹'+emi.toFixed(2)+'<br>💰 Total Payment = ₹'+tot.toFixed(2)+'<br>📊 Total Interest = ₹'+interest.toFixed(2)+'<br>📅 Duration = '+N+' months ('+(N/12).toFixed(1)+' yrs)';
+  res.className='res-box ok';
+  document.getElementById('emiCW').classList.add('show');document.getElementById('btnEmiPDF').style.display='block';
+  makeChart('emiChart',{type:'pie',data:{labels:['Principal','Total Interest'],datasets:[{data:[P,interest],backgroundColor:['rgba(0,245,255,.7)','rgba(255,0,204,.7)'],borderColor:['#00f5ff','#ff00cc'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:txtCol(),font:{family:'Rajdhani',size:13}}}}}});
+  window._ePDF={P,aR,N,emi,tot,interest};
+});
+
+/* ═══════════════════════════════════
+   PROFIT & LOSS
+═══════════════════════════════════ */
+document.getElementById('btnPL').addEventListener('click',function(){
+  var cp=+document.getElementById('plCP').value,sp=+document.getElementById('plSP').value;
+  var res=document.getElementById('plRes');
+  if(!cp||!sp){res.textContent='CP aur SP dono bharo!';res.className='res-box er';return;}
+  var diff=sp-cp,pct=(Math.abs(diff)/cp)*100;
+  if(diff>0)res.innerHTML='✅ PROFIT = ₹'+diff.toFixed(2)+'<br>📈 Profit % = '+pct.toFixed(2)+'%';
+  else if(diff<0)res.innerHTML='❌ LOSS = ₹'+Math.abs(diff).toFixed(2)+'<br>📉 Loss % = '+pct.toFixed(2)+'%';
+  else res.innerHTML='⚖️ No Profit, No Loss';
+  res.className='res-box ok';
+  document.getElementById('plCW').classList.add('show');document.getElementById('btnPlPDF').style.display='block';
+  makeChart('plChart',{type:'bar',data:{labels:['Cost Price','Selling Price'],datasets:[{label:'Amount (₹)',data:[cp,sp],backgroundColor:[diff>=0?'rgba(0,245,255,.6)':'rgba(255,68,102,.6)',diff>=0?'rgba(0,255,136,.6)':'rgba(255,170,0,.6)'],borderColor:[diff>=0?'#00f5ff':'#ff4466',diff>=0?'#00ff88':'#ffaa00'],borderWidth:2,borderRadius:6}]},options:{responsive:true,plugins:{legend:{display:false}},scales:{y:{ticks:{color:txtCol(),callback:function(v){return'₹'+v.toLocaleString('en-IN');}},grid:{color:gridCol()}},x:{ticks:{color:txtCol()},grid:{display:false}}}}});
+  window._pPDF={cp,sp,diff,pct};
+});
+
+/* ═══════════════════════════════════
+   SIP CALCULATOR
+═══════════════════════════════════ */
+function sipMaturity(p,rAnn,tYrs){var mo=rAnn/12/100,n=tYrs*12;return p*((Math.pow(1+mo,n)-1)/mo)*(1+mo);}
+document.getElementById('btnSIP').addEventListener('click',function(){
+  var P=document.getElementById('sipP').value===''?null:+document.getElementById('sipP').value;
+  var R=document.getElementById('sipR').value===''?null:+document.getElementById('sipR').value;
+  var T=document.getElementById('sipT').value===''?null:+document.getElementById('sipT').value;
+  var M=document.getElementById('sipM').value===''?null:+document.getElementById('sipM').value;
+  var res=document.getElementById('sipRes');
+  var mat,totInv,gains,labels=[],invD=[],gwD=[];
+  if(P&&R&&T){
+    mat=sipMaturity(P,R,T); totInv=P*T*12; gains=mat-totInv;
+    res.innerHTML='📊 Total Invested = <strong>'+fmt(totInv)+'</strong><br>💰 Est. Returns = <strong>'+fmt(gains)+'</strong><br>🚀 Maturity Value = <strong>'+fmt(mat)+'</strong><br>📈 Wealth Ratio = <strong>'+(mat/totInv).toFixed(2)+'x</strong>';
+    res.className='res-box ok';
+    for(var yr=1;yr<=T;yr++){labels.push('Yr '+yr);invD.push(Math.round(P*yr*12));gwD.push(Math.round(sipMaturity(P,R,yr)));}
+    document.getElementById('sipCW').classList.add('show');document.getElementById('btnSipPDF').style.display='block';
+    makeChart('sipChart',{type:'line',data:{labels:labels,datasets:[{label:'Invested',data:invD,borderColor:'#00f5ff',backgroundColor:'rgba(0,245,255,.1)',fill:true,tension:.4,borderWidth:2},{label:'Portfolio Value',data:gwD,borderColor:'#ffd700',backgroundColor:'rgba(255,215,0,.1)',fill:true,tension:.4,borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:txtCol(),font:{family:'Rajdhani',size:12}}}},scales:{y:{ticks:{color:txtCol(),callback:function(v){return fmt(v);}},grid:{color:gridCol()}},x:{ticks:{color:txtCol()},grid:{display:false}}}}});
+    window._sPDF={P,R,T,totInv,mat,gains,labels,invD,gwD};
+  }else if(!P&&M&&R&&T){
+    var mo2=R/12/100,n2=T*12;var pReq=M/((Math.pow(1+mo2,n2)-1)/mo2*(1+mo2));
+    totInv=pReq*n2; gains=M-totInv;
+    res.innerHTML='✅ Required Monthly SIP = <strong>₹'+pReq.toFixed(2)+'</strong><br>💰 Total Investment = <strong>'+fmt(totInv)+'</strong><br>🎯 Target Corpus = <strong>'+fmt(M)+'</strong>';
+    res.className='res-box ok';document.getElementById('btnSipPDF').style.display='block';
+    window._sPDF={P:pReq,R,T,totInv,mat:M,gains};
+  }else{res.textContent='P + R + T bharo, ya Target Corpus + R + T bharo.';res.className='res-box er';}
+});
+
+/* ═══════════════════════════════════
+   FD CALCULATOR
+═══════════════════════════════════ */
+document.getElementById('btnFD').addEventListener('click',function(){
+  var type=document.querySelector('input[name="fdType"]:checked').value;
+  var P=document.getElementById('fdP').value===''?null:+document.getElementById('fdP').value;
+  var R=document.getElementById('fdR').value===''?null:+document.getElementById('fdR').value;
+  var T=document.getElementById('fdT').value===''?null:+document.getElementById('fdT').value;
+  var A=document.getElementById('fdA').value===''?null:+document.getElementById('fdA').value;
+  var res=document.getElementById('fdRes');
+  var bl=[P,R,T,A].filter(function(x){return x===null;}).length;
+  if(bl!==1){res.textContent='Exactly 3 fields bharo, 1 blank!';res.className='res-box er';return;}
+  var n=4,cA,cP,cR,cT;
+  if(type==='comp'){
+    if(A===null){cA=P*Math.pow(1+R/(n*100),n*T);res.innerHTML='🏛️ Maturity = ₹'+cA.toFixed(2)+'<br>💰 Interest Earned = ₹'+(cA-P).toFixed(2)+'<br>📈 Gain = '+((cA-P)/P*100).toFixed(2)+'%';cP=P;cR=R;cT=T;}
+    else if(P===null){cP=A/Math.pow(1+R/(n*100),n*T);res.innerHTML='✅ Principal Required = ₹'+cP.toFixed(2);cA=A;cR=R;cT=T;}
+    else if(R===null){cR=(Math.pow(A/P,1/(n*T))-1)*n*100;res.innerHTML='✅ Required Rate = '+cR.toFixed(4)+'% p.a.';cA=A;cP=P;cT=T;}
+    else{cT=Math.log(A/P)/(n*Math.log(1+R/(n*100)));res.innerHTML='✅ Required Time = '+cT.toFixed(2)+' years';cA=A;cP=P;cR=R;}
+  }else{
+    if(A===null){cA=P*(1+R*T/100);res.innerHTML='🏛️ Maturity = ₹'+cA.toFixed(2)+'<br>💰 Interest = ₹'+(cA-P).toFixed(2);cP=P;cR=R;cT=T;}
+    else if(P===null){cP=A/(1+R*T/100);res.innerHTML='✅ Principal = ₹'+cP.toFixed(2);cA=A;cR=R;cT=T;}
+    else if(R===null){cR=(A-P)/(P*T)*100;res.innerHTML='✅ Rate = '+cR.toFixed(4)+'% p.a.';cA=A;cP=P;cT=T;}
+    else{cT=(A-P)/(P*R)*100;res.innerHTML='✅ Time = '+cT.toFixed(2)+' years';cA=A;cP=P;cR=R;}
+  }
+  res.className='res-box ok';
+  var p2=cP||P,r2=cR||R,t2=cT||T;
+  if(p2&&r2&&t2){
+    var labels=[],vals=[];
+    for(var yr=0;yr<=Math.ceil(t2);yr++){
+      labels.push('Yr '+yr);
+      vals.push(Math.round(type==='comp'?p2*Math.pow(1+r2/(n*100),n*Math.min(yr,t2)):p2*(1+r2*Math.min(yr,t2)/100)));
+    }
+    document.getElementById('fdCW').classList.add('show');document.getElementById('btnFdPDF').style.display='block';
+    makeChart('fdChart',{type:'line',data:{labels:labels,datasets:[{label:'FD Value',data:vals,borderColor:'#00ff88',backgroundColor:'rgba(0,255,136,.1)',fill:true,tension:.3,borderWidth:2,pointRadius:4,pointBackgroundColor:'#00ff88'}]},options:{responsive:true,plugins:{legend:{labels:{color:txtCol(),font:{family:'Rajdhani',size:12}}}},scales:{y:{ticks:{color:txtCol(),callback:function(v){return fmt(v);}},grid:{color:gridCol()}},x:{ticks:{color:txtCol()},grid:{display:false}}}}});
+    window._fPDF={type,p2,r2,t2,labels,vals,maturity:vals[vals.length-1]};
+  }
+});
+
+/* ═══════════════════════════════════
+   MUTUAL FUND CALCULATOR
+═══════════════════════════════════ */
+document.getElementById('btnMF').addEventListener('click',function(){
+  var P=+document.getElementById('mfP').value,R=+document.getElementById('mfR').value,T=+document.getElementById('mfT').value;
+  var res=document.getElementById('mfRes');
+  if(!P||!R||!T){res.textContent='Teeno fields bharo!';res.className='res-box er';return;}
+  var mat=P*Math.pow(1+R/100,T),gains=mat-P;
+  res.innerHTML='💹 Investment = <strong>'+fmt(P)+'</strong><br>💰 Gains = <strong>'+fmt(gains)+'</strong><br>🚀 Maturity = <strong>'+fmt(mat)+'</strong><br>📈 Total Return = <strong>'+((gains/P)*100).toFixed(1)+'%</strong>';
+  res.className='res-box ok';
+  var labels=[],invL=[],gwL=[];
+  for(var yr=0;yr<=T;yr++){labels.push('Yr '+yr);invL.push(P);gwL.push(Math.round(P*Math.pow(1+R/100,yr)));}
+  document.getElementById('mfCW').classList.add('show');document.getElementById('btnMfPDF').style.display='block';
+  makeChart('mfChart',{type:'line',data:{labels:labels,datasets:[{label:'Invested',data:invL,borderColor:'rgba(0,245,255,.7)',backgroundColor:'transparent',borderDash:[6,4],tension:0,borderWidth:2},{label:'Portfolio Value',data:gwL,borderColor:'#ff00cc',backgroundColor:'rgba(255,0,204,.09)',fill:true,tension:.4,borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:txtCol(),font:{family:'Rajdhani',size:12}}}},scales:{y:{ticks:{color:txtCol(),callback:function(v){return fmt(v);}},grid:{color:gridCol()}},x:{ticks:{color:txtCol()},grid:{display:false}}}}});
+  window._mPDF={P,R,T,mat,gains};
+});
+
+/* ═══════════════════════════════════
+   UNIT CONVERTER — BIGHA + BISWA FIX
+═══════════════════════════════════ */
+var bighaM2={standard:1337.8,up_pucca:2015.9,up_kachcha:1008,rajasthan:2529.3,gujarat:1618,haryana:2508.4,punjab:4200,himachal:2015.9,uttarakhand:756.8,assam:14175};
+var bighaLabels={standard:'Standard/MP/Bihar/WB (1337.8 m²)',up_pucca:'UP Pucca (2015.9 m²)',up_kachcha:'UP Kachcha (1008 m²)',rajasthan:'Rajasthan (2529.3 m²)',gujarat:'Gujarat (1618 m²)',haryana:'Haryana (2508.4 m²)',punjab:'Punjab (4200 m²)',himachal:'HP (2015.9 m²)',uttarakhand:'Uttarakhand (756.8 m²)',assam:'Assam (14175 m²)'};
+function getBM(){return bighaM2[document.getElementById('bighaState').value]||1337.8;}
+var cvData={
+  weight:{units:['Kilogram (kg)','Gram (g)','Milligram (mg)','Pound (lb)','Ounce (oz)','Tonne (t)','Quintal'],keys:['kg','g','mg','lb','oz','t','qt'],toBase:{kg:1,g:1e-3,mg:1e-6,lb:.453592,oz:.0283495,t:1000,qt:100}},
+  length:{units:['Metre (m)','Kilometre (km)','Centimetre (cm)','Millimetre (mm)','Mile','Yard','Foot (ft)','Inch (in)','Nautical Mile'],keys:['m','km','cm','mm','mile','yard','ft','inch','nm'],toBase:{m:1,km:1000,cm:.01,mm:.001,mile:1609.34,yard:.9144,ft:.3048,inch:.0254,nm:1852}},
+  temp:{units:['Celsius (°C)','Fahrenheit (°F)','Kelvin (K)'],keys:['c','f','k']},
+  area:{units:['Sq. Metre (m²)','Sq. Kilometre (km²)','Sq. Centimetre (cm²)','Sq. Foot (ft²)','Sq. Inch (in²)','Acre','Hectare','Bigha (State-wise)','Biswa (1/20 Bigha)'],keys:['m2','km2','cm2','ft2','in2','acre','ha','bigha','biswa'],toBase:{m2:1,km2:1e6,cm2:1e-4,ft2:.092903,in2:6.4516e-4,acre:4046.86,ha:10000,bigha:getBM(),biswa:getBM()/20}},
+  speed:{units:['m/s','km/h','mph','Knots','Mach'],keys:['ms','kmh','mph','knot','mach'],toBase:{ms:1,kmh:1/3.6,mph:.44704,knot:.514444,mach:343}},
+  time:{units:['Second','Minute','Hour','Day','Week','Month (30d)','Year (365d)'],keys:['s','min','hr','day','wk','mo','yr'],toBase:{s:1,min:60,hr:3600,day:86400,wk:604800,mo:2592000,yr:31536000}},
+  data:{units:['Bit','Byte','Kilobyte (KB)','Megabyte (MB)','Gigabyte (GB)','Terabyte (TB)','Petabyte (PB)'],keys:['bit','byte','kb','mb','gb','tb','pb'],toBase:{bit:1,byte:8,kb:8000,mb:8e6,gb:8e9,tb:8e12,pb:8e15}}
+};
+var curCv='weight';
+function showBighaWrap(){
+  var f=document.getElementById('cvFrom').value,t=document.getElementById('cvTo').value;
+  var show=curCv==='area'&&(f==='bigha'||t==='bigha'||f==='biswa'||t==='biswa');
+  document.getElementById('bighaWrap').classList.toggle('show',show);
+}
+function fillCvSelects(){
+  if(curCv==='area'){cvData.area.toBase.bigha=getBM();cvData.area.toBase.biswa=getBM()/20;}
+  var d=cvData[curCv],f=document.getElementById('cvFrom'),t=document.getElementById('cvTo');
+  f.innerHTML='';t.innerHTML='';
+  d.units.forEach(function(u,i){f.innerHTML+='<option value="'+d.keys[i]+'">'+u+'</option>';t.innerHTML+='<option value="'+d.keys[i]+'">'+u+'</option>';});
+  if(d.units.length>1)t.selectedIndex=1; showBighaWrap();
+}
+function doConvert(){
+  var val=parseFloat(document.getElementById('cvVal').value);
+  var fr=document.getElementById('cvFrom').value,to=document.getElementById('cvTo').value;
+  var res=document.getElementById('cvRes');
+  if(isNaN(val)){res.textContent='Enter a valid number to convert...';return;}
+  if(curCv==='area'){cvData.area.toBase.bigha=getBM();cvData.area.toBase.biswa=getBM()/20;}
+  var d=cvData[curCv],result;
+  if(curCv==='temp'){
+    var c;if(fr==='c')c=val;else if(fr==='f')c=(val-32)*5/9;else c=val-273.15;
+    if(to==='c')result=c;else if(to==='f')result=c*9/5+32;else result=c+273.15;
+  }else{result=(val*d.toBase[fr])/d.toBase[to];}
+  var fn=d.units[d.keys.indexOf(fr)],tn=d.units[d.keys.indexOf(to)];
+  var fmt2=Math.abs(result)>=1e9||Math.abs(result)<0.00001?result.toExponential(5):parseFloat(result.toFixed(8));
+  var extra='';
+  if(curCv==='area'&&(fr==='bigha'||to==='bigha'||fr==='biswa'||to==='biswa'))extra='\n📍 State: '+bighaLabels[document.getElementById('bighaState').value];
+  res.textContent=val+' '+fn+'  =  '+fmt2+' '+tn+extra;
+}
+document.getElementById('bighaState').addEventListener('change',function(){
+  cvData.area.toBase.bigha=getBM();cvData.area.toBase.biswa=getBM()/20;
+  document.getElementById('bighaNote').textContent='⚠️ '+bighaLabels[this.value]+'. 1 Bigha = 20 Biswa.';
+  doConvert();
+});
+document.getElementById('convTabs').addEventListener('click',function(e){
+  var b=e.target.closest('[data-cv]');if(!b)return;
+  curCv=b.dataset.cv;
+  document.querySelectorAll('.ctab').forEach(function(t){t.classList.remove('on');});b.classList.add('on');
+  fillCvSelects();doConvert();
+});
+document.getElementById('cvVal').addEventListener('input',doConvert);
+document.getElementById('cvFrom').addEventListener('change',function(){showBighaWrap();doConvert();});
+document.getElementById('cvTo').addEventListener('change',function(){showBighaWrap();doConvert();});
+fillCvSelects();
+
+/* ═══════════════════════════════════
+   PDF REPORT GENERATOR
+═══════════════════════════════════ */
+function mkPDF(calcName,summary,chartId,tableHead,tableRows,recs,reportData){
+  var jsPDF=window.jspdf&&window.jspdf.jsPDF;
+  if(!jsPDF){alert('PDF library load nahi hua. Internet check karo.');return;}
+  var doc=new jsPDF({orientation:'p',unit:'mm',format:'a4'});
+  var W=210,H=297,rid='RTL-'+Date.now().toString(36).toUpperCase().slice(-8);
+  var now2=new Date().toLocaleString('en-IN');
+  function addPageBg(){
+    doc.setFillColor(5,5,16);doc.rect(0,0,W,H,'F');
+    doc.setFillColor(0,245,255);doc.rect(0,0,W,2,'F');
+    doc.setFillColor(0,245,255,0.5);doc.rect(0,H-2,W,2,'F');
+  }
+  // PAGE 1
+  addPageBg();
+  // Header
+  doc.setFillColor(8,12,35);doc.roundedRect(10,8,W-20,52,4,4,'F');
+  doc.setDrawColor(0,245,255);doc.setLineWidth(.4);doc.roundedRect(10,8,W-20,52,4,4,'S');
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(0,245,255);
+  doc.text('RAMKRISHNA TECH LAB',W/2,24,{align:'center'});
+  doc.setFontSize(11);doc.setTextColor(180,210,240);
+  doc.text('Premium Financial Analysis Report',W/2,33,{align:'center'});
+  doc.setFontSize(8);doc.setTextColor(80,140,180);
+  doc.text('Report ID: '+rid,W/2,41,{align:'center'});
+  doc.text('Generated: '+now2,W/2,48,{align:'center'});
+  // Calc Title
+  doc.setFillColor(0,30,60);doc.roundedRect(10,66,W-20,22,3,3,'F');
+  doc.setFontSize(15);doc.setTextColor(255,215,0);
+  doc.text(calcName,W/2,77,{align:'center'});
+  doc.setFontSize(9);doc.setTextColor(100,180,220);
+  doc.text('RK Tech Lab · Financial Intelligence 2026',W/2,85,{align:'center'});
+  // Section: Summary
+  var y=95;
+  doc.setFillColor(0,20,45);doc.roundedRect(10,y,W-20,9,2,2,'F');
+  doc.setFontSize(11);doc.setTextColor(0,245,255);doc.text('EXECUTIVE SUMMARY',15,y+6.2);
+  y+=14;
+  var colW=(W-30)/2;
+  summary.forEach(function(item,idx){
+    var col=idx%2,row=Math.floor(idx/2);
+    var xi=10+col*(colW+5),yi=y+row*18;
+    doc.setFillColor(4,18,40);doc.roundedRect(xi,yi,colW,15,2,2,'F');
+    doc.setDrawColor(0,80,120);doc.setLineWidth(.3);doc.roundedRect(xi,yi,colW,15,2,2,'S');
+    doc.setFontSize(7.5);doc.setTextColor(80,180,220);doc.text(String(item[0]).toUpperCase(),xi+4,yi+6);
+    doc.setFontSize(10);doc.setTextColor(220,240,255);doc.text(String(item[1]),xi+4,yi+12.5);
+  });
+  y+=Math.ceil(summary.length/2)*18+6;
+  // Chart
+  if(chartId){
+    var cv=document.getElementById(chartId);
+    if(cv){
+      try{
+        var img=cv.toDataURL('image/png');
+        if(y>200){doc.addPage();addPageBg();y=15;}
+        doc.setFillColor(0,20,45);doc.roundedRect(10,y,W-20,9,2,2,'F');
+        doc.setFontSize(11);doc.setTextColor(0,245,255);doc.text('VISUAL ANALYSIS',15,y+6.2);
+        y+=13;
+        doc.addImage(img,'PNG',15,y,W-30,62);y+=67;
+      }catch(e){}
+    }
+  }
+  // Page 2: Recommendations + Table
+  doc.addPage();addPageBg();y=15;
+  doc.setFillColor(0,20,45);doc.roundedRect(10,y,W-20,9,2,2,'F');
+  doc.setFontSize(11);doc.setTextColor(255,215,0);doc.text('SMART RECOMMENDATIONS',15,y+6.2);
+  y+=14;
+  recs.forEach(function(rec){
+    var lines=doc.splitTextToSize('➤  '+rec,W-32);
+    doc.setFontSize(9.5);doc.setTextColor(200,225,245);
+    doc.text(lines,14,y);y+=lines.length*6+4;
+  });
+  y+=6;
+  if(tableHead&&tableRows&&tableRows.length){
+    doc.setFillColor(0,20,45);doc.roundedRect(10,y,W-20,9,2,2,'F');
+    doc.setFontSize(11);doc.setTextColor(0,245,255);doc.text('DETAILED BREAKDOWN',15,y+6.2);
+    y+=10;
+    doc.autoTable({startY:y,head:[tableHead],body:tableRows,theme:'grid',headStyles:{fillColor:[0,45,85],textColor:[0,245,255],fontStyle:'bold',fontSize:9},bodyStyles:{fillColor:[4,14,32],textColor:[190,220,240],fontSize:8.5},alternateRowStyles:{fillColor:[2,20,42]},columnStyles:{0:{fontStyle:'bold',textColor:[80,180,220]}},margin:{left:10,right:10}});
+  }
+  // Footer all pages
+  var pages=doc.internal.getNumberOfPages();
+  for(var pg=1;pg<=pages;pg++){
+    doc.setPage(pg);
+    var fY=H-8;
+    doc.setDrawColor(0,245,255);doc.setLineWidth(.25);doc.line(10,fY-4,W-10,fY-4);
+    doc.setFontSize(6.5);doc.setTextColor(60,110,150);
+    doc.text('RAMKRISHNA TECH LAB  |  Report ID: '+rid,15,fY);
+    doc.text('Page '+pg+' of '+pages,W-14,fY,{align:'right'});
+    doc.text(now2,W/2,fY,{align:'center'});
+  }
+  doc.save('RKFinanceReport_'+rid+'.pdf');
+}
+
+// PDF buttons
+document.getElementById('btnIntPDF').addEventListener('click',function(){
+  var d=window._iPDF;if(!d)return;
+  var summary=[['Type',d.type==='si'?'Simple Interest':'Compound Interest'],['Principal',d.P?'₹'+parseFloat(d.P).toFixed(2):'-'],['Rate',d.R?d.R+'% p.a.':'-'],['Time',d.T?d.T+' years':'-'],['Interest',d.I?'₹'+parseFloat(d.I).toFixed(2):'-'],['Total Amount',d.P&&d.I?'₹'+(parseFloat(d.P)+parseFloat(d.I)).toFixed(2):'-']];
+  var recs=['Compound interest grows exponentially — longer tenure = higher benefit.','Review rate of interest periodically and switch to better options if available.','Reinvest earned interest to maximize compounding effect.'];
+  if(d.R&&d.R>10)recs.push('Rate above 10% is excellent! Consider diversifying into FD or Bonds.');
+  mkPDF('Interest Calculator',summary,'intChart',['Field','Value'],summary.map(function(r){return[r[0],r[1]];}),recs);
+});
+document.getElementById('btnEmiPDF').addEventListener('click',function(){
+  var d=window._ePDF;if(!d)return;
+  var summary=[['Loan Amount','₹'+d.P.toLocaleString('en-IN')],['Interest Rate',d.aR+'% p.a.'],['Duration',d.N+' months'],['Monthly EMI','₹'+d.emi.toFixed(2)],['Total Payment','₹'+d.tot.toFixed(2)],['Total Interest','₹'+d.interest.toFixed(2)]];
+  var intPct=(d.interest/d.P*100).toFixed(1);
+  var recs=['Total interest is '+intPct+'% of principal.','Making extra payments early reduces total interest significantly.','Maintain 3–6 months EMI as emergency fund before taking loan.'];
+  if(intPct>50)recs.push('Interest is very high! Consider prepayment or shorter tenure to save money.');
+  mkPDF('EMI Calculator',summary,'emiChart',['Parameter','Value'],summary.map(function(r){return[r[0],r[1]];}),recs);
+});
+document.getElementById('btnPlPDF').addEventListener('click',function(){
+  var d=window._pPDF;if(!d)return;
+  var summary=[['Cost Price','₹'+d.cp.toLocaleString('en-IN')],['Selling Price','₹'+d.sp.toLocaleString('en-IN')],[d.diff>0?'Profit':'Loss','₹'+Math.abs(d.diff).toFixed(2)],[d.diff>0?'Profit %':'Loss %',d.pct.toFixed(2)+'%'],['Result',d.diff>0?'✅ PROFITABLE':'❌ LOSS-MAKING'],['Net P&L','₹'+(d.sp-d.cp).toFixed(2)]];
+  var recs=d.diff>0?['Good profit of '+d.pct.toFixed(1)+'%. Reinvest for business growth.','Track monthly P&L consistently to identify growth trends.']:['Selling below cost! Review pricing strategy immediately.','Identify and reduce overhead costs to improve margins.'];
+  mkPDF('Profit & Loss Calculator',summary,'plChart',['Parameter','Value'],summary.map(function(r){return[r[0],r[1]];}),recs);
+});
+document.getElementById('btnSipPDF').addEventListener('click',function(){
+  var d=window._sPDF;if(!d)return;
+  var mult=d.mat/d.totInv;
+  var summary=[['Monthly SIP','₹'+d.P.toLocaleString('en-IN')],['Expected CAGR',d.R+'% p.a.'],['Time Period',d.T+' years'],['Total Invested',fmt(d.totInv)],['Est. Returns',fmt(d.gains)],['Maturity Value',fmt(d.mat)]];
+  var recs=['Money grows '+mult.toFixed(2)+'x in '+d.T+' years! Power of compounding at work.','Increase SIP by 10% annually (Step-Up SIP) to dramatically boost corpus.','Stay invested during market corrections — SIP averages the cost.'];
+  if(d.R<12)recs.push('Equity mutual funds historically give 12–15% CAGR — consider if risk tolerance allows.');
+  var tHead=d.labels?['Year','Invested','Portfolio Value','Gains']:null;
+  var tRows=d.labels?d.labels.map(function(l,i){return[l,fmt(d.invD[i]),fmt(d.gwD[i]),fmt(d.gwD[i]-d.invD[i])];}):[summary.map(function(r){return[r[0],r[1]];})];
+  mkPDF('SIP Calculator',summary,'sipChart',tHead,tRows,recs);
+});
+document.getElementById('btnFdPDF').addEventListener('click',function(){
+  var d=window._fPDF;if(!d)return;
+  var summary=[['Principal','₹'+d.p2.toLocaleString('en-IN')],['Rate',d.r2.toFixed(2)+'% p.a.'],['Duration',d.t2.toFixed(2)+' years'],['Compounding',d.type==='comp'?'Quarterly':'Simple Interest'],['Maturity',fmt(d.maturity)],['Interest Earned',fmt(d.maturity-d.p2)]];
+  var recs=['FD is low risk. For better returns, consider debt mutual funds.','FD laddering: split into multiple FDs with different maturities for liquidity.'];
+  if(d.r2<7)recs.push('Rate below 7%. Compare rates across banks — many offer higher for specific tenures.');
+  var tHead=d.labels?['Year','Principal','FD Value','Interest']:null;
+  var tRows=d.labels?d.labels.map(function(l,i){return[l,fmt(d.p2),fmt(d.vals[i]),fmt(d.vals[i]-d.p2)];}):[summary.map(function(r){return[r[0],r[1]];})];
+  mkPDF('FD Calculator',summary,'fdChart',tHead,tRows,recs);
+});
+document.getElementById('btnMfPDF').addEventListener('click',function(){
+  var d=window._mPDF;if(!d)return;
+  var summary=[['Investment',fmt(d.P)],['CAGR',d.R+'% p.a.'],['Time',d.T+' years'],['Maturity',fmt(d.mat)],['Gains',fmt(d.gains)],['Total Return',((d.gains/d.P)*100).toFixed(1)+'%']];
+  var recs=['Diversify across large-cap, mid-cap and flexi-cap funds.','Review and rebalance portfolio every 6 months.','Reinvest dividends — it dramatically increases final corpus.','Avoid withdrawing during market lows — stay invested for full term.'];
+  mkPDF('Mutual Fund Calculator',summary,'mfChart',['Parameter','Value'],summary.map(function(r){return[r[0],r[1]];}),recs);
+});
+
+/* ═══════════════════════════════════
+   PARTICLES
+═══════════════════════════════════ */
+(function(){
+  var cv=document.getElementById('pCanvas'),ctx=cv.getContext('2d');
+  var W,H,pts=[];var COLS=['rgba(0,245,255,','rgba(255,0,204,','rgba(255,215,0,'];
+  function resize(){W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;}
+  resize(); window.addEventListener('resize',resize,{passive:true});
+  function P(){this.x=Math.random()*W;this.y=Math.random()*H;this.r=Math.random()*1.4+.3;this.c=COLS[Math.floor(Math.random()*3)];this.a=Math.random()*.22+.05;this.vx=(Math.random()-.5)*.17;this.vy=(Math.random()-.5)*.17;this.ph=Math.random()*Math.PI*2;this.ps=Math.random()*.008+.003;}
+  for(var i=0;i<55;i++)pts.push(new P());
+  (function draw(){ctx.clearRect(0,0,W,H);pts.forEach(function(p){p.ph+=p.ps;var a=p.a*(.6+.4*Math.sin(p.ph));ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.c+a+')';ctx.fill();p.x+=p.vx;p.y+=p.vy;if(p.x<-5)p.x=W+5;if(p.x>W+5)p.x=-5;if(p.y<-5)p.y=H+5;if(p.y>H+5)p.y=-5;});requestAnimationFrame(draw);})();
+})();
+
+/* ═══════════════════════════════════
+   NAV SCROLL
+═══════════════════════════════════ */
+var topNav=document.querySelector('nav.topnav'),tkng=false;
+window.addEventListener('scroll',function(){
+  if(!tkng){requestAnimationFrame(function(){topNav.classList.toggle('scrolled',window.scrollY>40);tkng=false;});tkng=true;}
+},{passive:true});
+
+/* ═══════════════════════════════════
+   MOBILE BOTTOM NAV ACTIVE STATE
+═══════════════════════════════════ */
+var mnLinks=document.querySelectorAll('.mnl');
+function updMobNav(){
+  var secs=['contact','convert','finance','tools','games'];
+  var active='home';
+  secs.forEach(function(id){
+    var el=document.getElementById(id);
+    if(el&&window.scrollY+window.innerHeight/2>=el.offsetTop)active=id;
+  });
+  mnLinks.forEach(function(a){a.classList.toggle('act',a.dataset.sec===active);});
+}
+window.addEventListener('scroll',updMobNav,{passive:true});
+updMobNav();
+
+/* ═══════════════════════════════════
+   SCROLL REVEAL
+═══════════════════════════════════ */
+document.body.classList.add('jl');
+var fEls=document.querySelectorAll('.fade-up');
+if('IntersectionObserver' in window){
+  var io=new IntersectionObserver(function(entries){entries.forEach(function(e){if(e.isIntersecting){e.target.classList.add('vis');io.unobserve(e.target);}});},{threshold:.05});
+  fEls.forEach(function(el){io.observe(el);});
+  requestAnimationFrame(function(){fEls.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<window.innerHeight+10){el.classList.add('vis');io.unobserve(el);}});});
+}else{fEls.forEach(function(el){el.classList.add('vis');});}
+
+}); // end DOMContentLoaded
+</script>
+</body>
+</html>
